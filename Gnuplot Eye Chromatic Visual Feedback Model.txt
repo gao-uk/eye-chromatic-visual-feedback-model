@@ -1,0 +1,2481 @@
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# 
+# This gnuplot script file encodes a software model comprising a human schematic eye and a visual feedback mechanism taking its cues
+# from ocular longitudinal chromatic aberration. This eye model is used to explore how prolonged near work may induce myopia.
+#
+# This script runs in the free graphing application gnuplot, which is available for Microsoft Windows, macOS, Linux and Unix.
+#
+# Language     : Gnuplot 6.0.4 script (gnuplot command language)
+# Version      : 1.0
+# Text encoding: UTF-8
+# Author       : Mr Giuseppe Antonio Olmi
+# Date written : 2001-2026
+# Location     : United Kingdom
+# 
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# Via the gnuplot application, this script plots a series of graphs illustrating the characteristics of a hypothesised eye visual 
+# feedback emmetropisation mechanism that exploits longitudinal chromatic aberration to regulate eye axial length, highlighting how 
+# this mechanism may be involved in the onset and development of axial myopia from near work. 
+
+# This script accompanies the 2026 study authored by G.A.Olmi entitled "A Software Model of Chromatic Aberration Visual Feedback in the 
+# Eye: Exploring the Role of Near Work in Myopia Development". This script plots the graphs presented in the study.
+
+# This script implements the Yves Le Grand Full Theoretical Eye schematic eye model, which has been extended in the script to operate  
+# at all visible light wavelengths, and for all states of accommodation. Using this schematic eye, this script then implements the 
+# hypothesised chromatic emmetropisation model based on longitudinal chromatic aberration.
+
+# In this chromatic emmetropisation model, a visual feedback signal is calculated by subtracting the level of defocus of red 
+# wavelengths (gauged by the red blur circle diameter R) on the schematic eye retina from the level of defocus of blue wavelengths 
+# (gauged by the blue blur circle diameter B) using the formula B-R. In this model, we hypothesise that when the B-R signal becomes 
+# negative for a sustained period, it induces eye axial growth; whereas if B-R assumes a high positive value, it halts eye growth; and 
+# when B-R takes on a low positive value, it has no direct effect on axial growth, but permits natural developmental eye growth. This 
+# three-state chromatic scheme we posited on the basis of the features of the graph of Figure 2, a graph which illustrates how the B-R
+# visual feedback signal may serve to regulate eye axial length to achieve emmetropisation. Then the graph of Figure 6 demonstrates 
+# how sustained near work might result in myopia, as it shows that at close viewing distances, the B-R visual feedback signal becomes
+# negative in the schematic eyes of some individuals, and our model postulates that such sustained negative B-R signals induce eye 
+# axial growth, leading to axial myopia. 
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Installing the gnuplot application (http://www.gnuplot.info)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# For Microsoft Windows, the gnuplot installer exe application is found here: https://sourceforge.net/projects/gnuplot/files/gnuplot/
+# At this URL, open the folder whose name is the latest gnuplot version number, and download the exe application within that folder.
+# Run this installer application to install gnuplot on your computer. Once gnuplot is installed, launch it, and a console window is
+# displayed, in which you can type the call command detailed in the next section below to plot a graph. Alternatively, instead of 
+# using the call command, you can run this script via the gnuplot app menu: File > Open... and then selecting this file.
+
+# For macOS, gnuplot is most easily installed using Homebrew. To install Homebrew on a Mac, in a Mac Terminal window, enter the command 
+# given on the Homebrew website: https://brew.sh , then wait for Homebrew to install (it takes a few minutes). Once Homebrew has been  
+# installed, to install the gnuplot application using Homebrew, in a Mac Terminal window, enter the command: brew install gnuplot  
+# This will download and install the gnuplot app. Once gnuplot is installed, to launch gnuplot, enter the Terminal command: gnuplot   
+# When gnuplot is running in Terminal, to plot a graph, enter the call command detailed in the next section below.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# How to run this gnuplot script file in the gnuplot application, in order to plot the graphs specified in this script
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# After launching gnuplot, the graphs specified in this gnuplot script file can be plotted using the following gnuplot command:
+#
+#     call "full filepath and filename of this gnuplot script file on your computer"
+#
+# On Windows PC, the call command takes the form: call "C:/Users/YourUserName/Desktop/Gnuplot Eye Chromatic Visual Feedback Model.txt" 
+# This is assuming you place this script file on your Desktop. Note: forward slashes / must be used in filepaths in gnuplot on Windows. 
+
+# On an Apple Mac, the call command takes the form: call "/Users/YourUserName/Desktop/Gnuplot Eye Chromatic Visual Feedback Model.txt"
+# This is assuming you place this script file on your Desktop.   
+
+# The particular graph to plot is specified by setting the parameter GTP to 1, 2, 3, etc, in this script file, as well as setting other   
+# parameters such as 'person', etc. This is done in the next section below.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH PLOTTING PARAMETERS
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+GTP = 1
+person = 1
+formula  = 1
+eyeModel = 1
+powerCor1  = 0
+powerCor2  = 0
+peripheral = 0
+objectDistance = 0.3
+pupilDiameter  = 0.003
+vertexDistance = 0.013
+blueBlurCircleAddition = 0
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# PLOTTING THE GRAPHS IN THE FIGURES OF THE STUDY
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# To plot the graphs in the figures of the study, first set the above graph plotting parameters to the following default values:
+
+# Default values: GTP = 1, person = 1, formula = 1, eyeModel = 1, powerCor1 = 0, powerCor2 = 0, peripheral = 0, objectDistance = 0.3,
+# pupilDiameter = 0.003, vertexDistance = 0.013, blueBlurCircleAddition = 0
+
+# Then set the following specific values to plot the various graphs in the figures of the study:
+
+# To plot the graph of Figure 2,  set: GTP = 1; person =  8 
+# To plot the graph of Figure 3,  set: GTP = 1; person = -2; objectDistance = 0.6 
+# To plot the graph of Figure 4,  set: GTP = 1; person = -3; objectDistance = 0.6 
+# To plot the graph of Figure 5,  set: GTP = 2; person =  8; objectDistance = 1e90 
+
+# To plot the graph of Figure 6,  set: GTP = 3 
+# To plot the graph of Figure 7,  set: GTP = 4; person =  4 
+# To plot the graph of Figure 8,  set: GTP = 4; person =  4, peripheral = 1 
+# To plot the graph of Figure 9,  set: GTP = 5; powerCor1 = -3 
+
+# To plot the graph of Figure 10, set: GTP = 1; person = -1 
+# To plot the graph of Figure 11, set: GTP = 1; person = -1; powerCor1 = 2 
+# To plot the graph of Figure 12, set: GTP = 6; person =  4 
+# To plot the graph of Figure 13, set: GTP = 6; person =  4; peripheral = 1 
+ 
+# To plot the graph of Figure 14, set: GTP = 3; blueBlurCircleAddition = 0.000055 
+# To plot the graph of Figure 17, set: GTP = 1; person = 8; formula = 9 
+# To plot the graph of Figure 18, set: GTP = 7; person = 8; objectDistance = 0.6 
+
+# To plot the graph of Figure 19, set: GTP = 1; person = -1; powerCor1 =  5; objectDistance = 1e90
+# To plot the graph of Figure 20, set: GTP = 1; person = -1; powerCor1 = -5; objectDistance = 1e90
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH PLOTTING PARAMETERS: A description of their functions
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GTP (graph to plot) specifies which of the graphs specified in this script file are plotted when this file is executed.
+
+# Set person = 1, 2, 3, ... 10 to specify which person (out of the 10 individuals in the Ivanoff lag of accommodation data) we plot the 
+# graph for, in the graphs where this variable is applicable. By setting person to a specific individual, our eye model will operate 
+# using the lag of accommodation characteristics and eye axial length of that particular subject. Set person = -1 to plot the graph 
+# for all 10 Ivanoff subjects. Set person = -2 to plot just for Ivanoff subjects 3, 5, 6, 7 and 8 who all have normal lag of 
+# accommodation. Set person = -3 to plot just for Ivanoff subjects 1, 2, 4, 9 and 10 who all have high lag of accommodation.
+
+# The parameter 'formula' determines which visual feedback formula is used when the graphs are plotted. Set formula = 1 for a B-R  
+# visual feedback formula, set formula = 2 for a B-G visual feedback formula, set formula = 4 for a B-(G+R)/2 visual feedback formula, 
+# set formula = 5 for a B/R visual feedback formula, set formula = 8 for a (B-R)/(B+R) visual feedback formula, set formula = 9 for a 
+# (B-R)*(B+R) visual feedback formula.
+
+# Set eyeModel = 1 to use the Le Grand schematic eye model when plotting the graphs, or set eyeModel = 2 to use the Emsley eye model.
+
+# Where applicable, powerCor1 and powerCor2 set the dioptre power of the two corrective lenses placed in front of the schematic eye 
+# (in contact as a doublet lens). The lenses can be made of different materials. The lens materials are set in the section entitled 
+# "Corrective Lens Functions". Lens material choices include CR-39, Trivex, polycarbonate and high-index plastic. If only one lens is 
+# required, its dioptre power can be set in powerCor1, setting powerCor2 to zero.
+
+# Where applicable, set peripheral = 0 to plot the graph for the posterior pole visual feedback signal (the visual feedback signal
+# where the optical axis meets the retina), or set peripheral = 1 to plot the graph for the peripheral retinal visual feedback signal 
+# in myopes (for emmetropes, the posterior pole signal is also valid in the retinal periphery up to around 20° to the optical axis).
+
+# Where applicable, objectDistance specifies the distance to the viewed object (in metres) for the schematic eye. Note that we use the
+# large number 1e90 to represent an infinite object distance. 
+
+# Set pupilDiameter to specify the schematic eye pupil diameter (in metres). For example 0.003 metres = 3 mm. Human pupil size varies
+# from 2 to 4 mm in bright light, and 4 to 8 mm in dim light.
+
+# Set vertexDistance to specify the axial distance in metres from the corrective lens to the apex of the front surface of the cornea in 
+# the eye model. For spectacle lenses, this is normally around 0.013 metres (13 mm). For contact lenses, the vertexDistance is set to 
+# zero. 
+
+# Setting blueBlurCircleAddition = 0.000055 metres (which is 0.055 mm) adds this length to the diameter of the calculated blue blur  
+# circle size B in visual feedback formulas such as B-R. This simulates the effect of the eye viewing a video screen image at 30 cm
+# distance in which the blue channel has been slightly blurred to such a degree that blue points in the image expand to blur disks of 
+# 1 mm diameter. Normally blueBlurCircleAddition should be set to zero. It is only used to simulate video screen blue channel blur.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH TYPES: This script file specifies seven main graph types, which are used to plot the figures in the study
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GTP = 1: Visual feedback signal VS eye axial length — How the visual feedback signal indicates when the eye is too long or too short
+# GTP = 2: Blur circle diameters  VS eye axial length — How blue, green and red blur circle diameters change as eye axial length varies
+# GTP = 3: Visual feedback signal VS object distance  — Demonstrating the near-work effect: how near work may cause myopia
+# GTP = 4: Visual feedback signal VS degree of myopia — Showing how minus corrective lenses may accelerate the progression of myopia 
+# GTP = 5: Visual feedback signal VS object distance  — The near-work effect in the retinal periphery of myopes 
+# GTP = 6: Visual feedback signal VS object distance  — Showing how plus lenses and bifocals may have anti-myopia effects
+# GTP = 7: Visual feedback signal VS pupil size       — The effect of pupil size on the visual feedback signal
+
+# Graphs GTP = 20 to 35 are for testing purposes, and not used in the study. 
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# OUTPUT TERMINAL: Select the gnuplot terminal used to display the graphs generated in this script
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Gnuplot's built-in graph display terminal is the qt terminal. This is the easiest to use. Graphs can also be output as image files, 
+# such as pdf or png files, by setting the terminal to pdf, png, etc, below. High quality vector graphics output is obtained from the 
+# pdf terminal and the svg terminal. The pdfcairo and pngcairo terminals produce better quality images than the pdf and png terminals. 
+
+imageFilePath = "/Users/Joe/Research/Myopia/Gnuplot Graphs/"  
+# File path to where the image file containing the graph is to be saved (not needed for the qt terminal)
+
+set terminal qt          size 800, 600 
+# set terminal svg         size 800, 600;  set output imageFilePath."Graph-Plot.svg"
+# set terminal pdfcairo    size 8in, 6in;  set output imageFilePath."Graph-Plot.pdf" 
+# set terminal pdf         size 8in, 6in;  set output imageFilePath."Graph-Plot.pdf"
+# set terminal pngcairo    size 800, 600;  set output imageFilePath."Graph-Plot.png" 
+# set terminal png         size 800, 600;  set output imageFilePath."Graph-Plot.png"
+# set terminal gif         size 800, 600;  set output imageFilePath."Graph-Plot.gif"
+# set terminal jpeg        size 800, 600;  set output imageFilePath."Graph-Plot.jpg"
+# set terminal postscript  size 8in, 6in portrait color; set output imageFilePath."Graph-Plot.ps
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# SETTING UP THE GENERAL GRAPH PLOTTING ENVIRONMENT
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+reset                     # Reset all graph options previously specified with the set command
+ 
+set size 1                # Sets size factor of the graph 
+set size ratio 1          # Sets the ratio of the gnuplot graph vertical to horizontal 
+set size ratio 0.6        # Use this setting for vertically compressed graphs 
+set origin 0, 0           # Sets position of graph on canvas
+set samples 100           # Sets X-axis resolution. Default value is 100. 
+
+set lmargin 8             # Margins must be set to fixed values to allow multiplot graphs to align properly
+set rmargin 5
+set tmargin 0
+set bmargin 0
+
+set title     font "Arial,13" tc rgb "#303040"   # Graph title font
+set xlabel    font "Arial,13" tc rgb "#303040"   # X-axis label font
+set ylabel    font "Arial,13" tc rgb "#303040"   # Y-axis label font
+set tics      font "Arial,12" tc rgb "#303040"   # Set axes numbering font
+
+set border 1+2+4+8     linecolor rgb "#303040" lw 0.3   # Set graph border colour and thickness
+
+set key       font "Arial,11" tc rgb "#303040"   # Set the text size and colour for the graph legend/key
+set key title font "Arial,11" tc rgb "#303040"   # Set key title text
+
+set print "-"                                                      # Directs gnuplot print command output to the standard output
+#set print "/Users/Joe/Research/Myopia/Gnuplot Graphs/Output.txt"  # Specify a filepath and file for text output from the print command
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# General note about arithmetic in gnuplot.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# In gnuplot, the division operation 1 / 10 will yield an answer of zero, not 0.1, because integer division is assumed if both numbers
+# are integers. To force floating-point arithmetic, make one of the numbers decimal, like 1 / 10.0, as this correctly resolves to 0.1.
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# THE STANDARD WAVELENGTH, AND COLOUR CONE PEAK SENSITIVITY WAVELENGTHS
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Reference Standard Wavelength. The wavelength (in nanometres) at which dioptre powers for the corrective lenses are measured.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+standardWavelength = 587.56     # This is the yellow-green colour of the helium d-line at 587.56 nanometres
+
+# In the US and UK, a yellow-green wavelength of 587.56 nm (helium d-line) is used for specifying the power of ophthalmic lenses.
+# In continental Europe the green 546.07 nm wavelength (mercury e-line) is often used instead.
+
+# Note that in his eye model, Le Grand uses the 589.3 nm (sodium D-line) wavelength as the standard reference wavelength. 
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Colour Cone Wavelengths. Peak sensitivity wavelength (in nanometres) for the blue, green and red colour cones in the human retina.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+blueConeW     = 437.0
+greenConeW    = 533.0
+redConeW      = 564.0
+
+# From the book: Dowling JE. "The Retina: An Approachable Part of the Brain". Belknap Press of Harvard University Press; 1987.
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# CORRECTIVE LENS MATERIALS
+# Refractive index dispersion formulas for ophthalmic corrective lens materials. In these formulas, the wavelength w is in nanometres.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plastics dispersion formulas. These formulas are valid for wavelengths w from 436.8 nm to 1052 nm.
+# PMMA = polymethyl methacrylate  |  Zeonex E48R = cyclo-olefin polymer. 
+# Source: https://refractiveindex.info/?shelf=3d&book=plastics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+refractiveIndexPMMA(w)               = sqrt(1 + (1.1819 * (w/1000.0)**2) / ((w/1000.0)**2 - 0.011313))
+refractiveIndexZeonexE48R(w)         = sqrt(1 + (1.2969 * (w/1000.0)**2) / ((w/1000.0)**2 - 0.011721))
+refractiveIndexPolycarbonate(w)      = sqrt(1 + (1.4182 * (w/1000.0)**2) / ((w/1000.0)**2 - 0.021304))
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Plastics dispersion formulas. These Cauchy formulas are calculated by obtaining the lens material nd refractive index and Vd Abbe  
+# values given here: https://www.abdo.org.uk/wp-content/uploads/2012/06/CET139.pdf and then deriving the Cauchy formulas using the  
+# curve fitting tool here: https://ian-macmillan.com/Cauchy-Optical-Dispersion-Calculator/
+# CR-39 = allyl diglycol carbonate (Columbia Resin 39)  |  Trivex = urethane-based prepolymer  |  High index 1.67 = polythiourethane.
+# CR-39 has nd = 1.498 and Abbe Vd = 58  |  Trivex has nd = 1.530 and Abbe Vd = 45  |  High index 1.67 has nd = 1.67 and Abbe Vd = 32.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+refractiveIndexCR39(w)               = 1.484983 + (4.494482 * 10**-3) / (w/1000.0)**2 - (3.785738 * 10**-16) / (w/1000.0)**4
+refractiveIndexTrivex(w)             = 1.512144 + (6.165122 * 10**-3) / (w/1000.0)**2 - (7.571476 * 10**-17) / (w/1000.0)**4
+refractiveIndexHighIndex167(w)       = 1.638258 + (1.095981 * 10**-2) / (w/1000.0)**2 + (7.571476 * 10**-17) / (w/1000.0)**4
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Glass dispersion formulas. These formulas are valid for wavelengths w from 300 nm to 2500 nm. 
+# These formulas are for Schott glasses (Schott is designated by the N prefix, for example N-BK7).
+# FK = fluorine crown glass  |  BK = borosilicate crown glass  |  SF = heavy flint.
+# Source: https://refractiveindex.info/?shelf=specs&book=SCHOTT-optical 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+refractiveIndexCrownGlassFK51(w)     = sqrt( 1 + 0.971247817*(w/1000.0)**2/((w/1000.0)**2-0.00472301995) + \
+                                                 0.216901417*(w/1000.0)**2/((w/1000.0)**2-0.0153575612 ) + \
+                                                 0.904651666*(w/1000.0)**2/((w/1000.0)**2-168.68133    ))  
+
+refractiveIndexCrownGlassBK7(w)      = sqrt( 1 + 1.03961212 *(w/1000.0)**2/( (w/1000.0)**2-0.00600069867) + \
+                                                 0.231792344*(w/1000.0)**2/( (w/1000.0)**2-0.0200179144 ) + \
+                                                 1.01046945 *(w/1000.0)**2/( (w/1000.0)**2-103.560653   ))
+                                                
+refractiveIndexFlintGlassSF10(w)     = sqrt( 1 + 1.62153902 *(w/1000.0)**2/((w/1000.0)**2-0.0122241457) + \
+                                                 0.256287842*(w/1000.0)**2/((w/1000.0)**2-0.0595736775) + \
+                                                 1.64447552* (w/1000.0)**2/((w/1000.0)**2-147.468793  ))    
+  
+refractiveIndexFlintGlassSF11(w)     = sqrt( 1 + 1.73759695 *(w/1000.0)**2/((w/1000.0)**2-0.013188707 ) + \
+                                                 0.313747346*(w/1000.0)**2/((w/1000.0)**2-0.0623068142) + \
+                                                 1.89878101* (w/1000.0)**2/((w/1000.0)**2-155.23629   ))  
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dispersion formula for water at 20°C. The formula is valid for wavelengths w from 182 nm to 1129 nm. 
+# Source: https://refractiveindex.info/?shelf=main&book=H2O&page=Daimon-20.0C
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+waterN(w)                            = sqrt( 1 + 5.684027565e-1*(w/1000.0)**2/((w/1000.0)**2-5.101829712e-3) + \
+                                                 1.726177391e-1*(w/1000.0)**2/((w/1000.0)**2-1.821153936e-2) + \
+                                                 2.086189578e-2*(w/1000.0)**2/((w/1000.0)**2-2.620722293e-2) + \
+                                                 1.130748688e-1*(w/1000.0)**2/((w/1000.0)**2-1.069792721e+1) )
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# YVES LE GRAND FULL THEORETICAL EYE MODEL
+# The following sections encode data from various books which detail the Xves Le Grand Full Theoretical schematic eye model.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# LE GRAND FULL THEORETICAL EYE: Schematic eye optical media refractive index values for any arbitrary wavelength w in nanometres.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# In this section we set up functions which return the refractive index of the various ocular media in the Le Grand schematic eye 
+# model for any arbitrary light wavelength w in nanometres.
+
+# Le Grand provides the following table of refractive index values for the optical media of his schematic eye on page 9 of his book:    
+# Yves Le Grand. "Form and Space Vision". Bloomington: Indiana University Press; 1967. 
+
+# Refractive Index Values for Le Grand Eye 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~
+#                                  Colour:      Infrared          Red               Yellow            Blue              Violet
+#                         Fraunhofer Line:      Oxygen A          Hydrogen C        Sodium D          Hydrogen F        Calcium G
+#                              Wavelength:      759.4 nm          656.3 nm          589.3 nm          486.1 nm          430.8 nm
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~
+
+# Air                                           1.0003            1.0003            1.0003            1.0003            1.0003
+# Cornea                                        1.3726            1.3751            1.3771            1.3818            1.3857
+# Aqueous Humour                                1.3331            1.3354            1.3374            1.3418            1.3454
+# Crystalline Lens (relaxed at infinity)        1.4144            1.4175            1.4200            1.4259            1.4307
+# Vitreous Humour                               1.3317            1.3341            1.3360            1.3404            1.3440
+# Crystalline Lens (focused at near point)                                          1.4270  
+
+
+# The figure for the crystalline lens refractive index at the near point of accommodation comes from the book: Günter Wyszecki, Walter  
+# Stanley Stiles. "Color Science Concepts and Methods, Quantitative Data and Formulas". Wiley; 1967. The same figure can also be found  
+# on page 65 of the book: Yves Le Grand and Sami El Hage. "Physiological Optics". Springer-Verlag; 1980.
+
+# We use curve fitting to derive functions that give these eye optical media refractive index values at any arbitrary wavelength. For
+# the curve fitting, we use the Cornu dispersion formula employed by Le Grand, which is of the form: N(w) = Ninf + K / (w - c), 
+# where Ninf, K and c are constants, and w is the wavelength.
+
+# To perform Cornu formula curve fitting within gnuplot, create a space-separated file called say refractive.txt, this file having two
+# data columns: wavelength and refractive index. Then type the gnuplot command: f(x) = A + B/(x-C) which represents the Cornu formula, 
+# followed by the curve fitting command: fit f(x) "refractive.txt" using 1:2 via A, B, C  
+
+# Thus via curve fitting we arrive at the following six functions which return the refractive index for each ocular medium at the   
+# specified visible wavelength w (in nanometres):
+
+# ~~~~~~~~~~~~~~~~~~        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Material                  Refractive Index at Wavelength w (in nanometres)
+# ~~~~~~~~~~~~~~~~~~        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+airN(w)                =    1.0003                                             # Air
+corneaN(w)             =    1.36033 + 7.86934 / (w - 120.302)                  # Cornea of Eye
+aqueousN(w)            =    1.32102 + 7.88955 / (w - 106.973)                  # Aqueous Humour
+crystallineNin(w)      =    1.39891 + 9.98421 / (w - 116.554)                  # Crystalline Lens (focused at infinity)
+crystallineNnp(w)      =   (1.39891 + 9.98421 / (w - 116.554)) * 1.427/1.42    # Crystalline Lens (focused at near point)
+vitreousN(w)           =    1.31956 + 7.98869 / (w - 103.558)                  # Vitreous Humour
+   
+
+# Note that Le Grand provides refractive index values for the crystalline lens in its relaxed state at five different wavelengths (as
+# shown in the above table), but for the crystalline lens at the near point of accommodation, he only gives one refractive index value, 
+# at the 589.3 nm wavelength. So we use calculated estimates for the near point refractive index value at other wavelengths. These 
+# estimates are obtained by multiplying the relaxed crystalline lens values by the factor 1.427/1.42, which is the ratio of the near 
+# point and relaxed refractive index values at 589.3 nm. This multiplication is performed within the above function crystallineNnp(w). 
+ 
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# LE GRAND FULL THEORETICAL EYE: Radius of curvature and relative position (in metres) of the schematic eye's optical surfaces.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# In this section, we set up constants and functions that give the radius of curvature and relative position of the optical surfaces
+# in the Le Grand schematic eye model. The functions take the argument fp, which is the focusing parameter detailed below. We also 
+# define a crystalline lens refractive index function which has the arguments fp and w.
+
+# The following data for the Le Grand Full Theoretical Eye model is taken from page 210 of the book: Günter Wyszecki, Walter Stanley 
+# Stiles. "Color Science Concepts and Methods, Quantitative Data and Formulas". Wiley; 1967. The same data can also be found on page 
+# 65 of the book: Yves Le Grand and Sami El Hage. "Physiological Optics". Springer-Verlag; 1980.
+
+# In the Yves Le Grand Full Theoretical Eye model, the following three values remain constant at all times:
+
+corneaRadiusFront  =  0.0078             # All values given in metres
+corneaRadiusRear   =  0.0065
+corneaThickness    =  0.00055
+
+
+# In the Le Grand eye model, there are five variables that depend on whether eye accommodation is relaxed or focused at the near point
+# of accommodation. These five variables are: 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       ~~~~~~~~~~~~~~~~       ~~~~~~~~~~~~~~~~
+# Le Grand Eye Model Parameter           Relaxed Value          Near Point Value
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~       ~~~~~~~~~~~~~~~~       ~~~~~~~~~~~~~~~~
+# Crystalline Lens Radius Front          0.0102                 0.0060
+# Crystalline Lens Radius Rear          -0.0060                -0.0055
+# Cornea to Crystalline Distance         0.00305                0.00265
+# Crystalline Lens Thickness             0.0040                 0.0045
+# Crystalline Refractive Index           1.42                   1.427    (these two refractive indices at sodium D-line 589.3 nm)
+
+# Le Grand only provides values for these five variables at these two extremes of eye accommodation (relaxed and the near point of
+# accommodation). To calculate the values of these variables for intermediate states of accommodation, we use a linear accommodation 
+# formula which states that for an eye model parameter X that varies with eye accommodation, if Xi is its specified value with the eye 
+# relaxed and focused on infinity, and Xn is its stated value when the eye model is focused at the near point of accommodation, then  
+# the value of X at any intermediate eye accommodation is given by the formula:
+#
+# X  =  Xi * (1-fp) + Xn * fp, 
+#
+# where the focusing parameter fp runs from 0 to 1. For the relaxed eye fp = 0. For the eye accommodated at the near point fp = 1. 
+#
+# The University of Tübingen eye research group has employed such a linear accommodation formula for use with eye models. See: 
+# https://web.archive.org/web/20160305040243/http://www.arkiv.certec.lth.se/doc/widesight/pettersson.html 
+
+# Using this linear accommodation formula, below we set up the five linear accommodation functions for the five variables of the Le 
+# Grand schematic eye model: 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  ~~~~~~~~~~~~~~~~         ~~~~~~~~~~~~~~~~
+# Le Grand Eye Model Parameter                      Relaxed Value            Near Point Value        
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                  ~~~~~~~~~~~~~~~~         ~~~~~~~~~~~~~~~~
+
+crystallineRadiusFront(fp)        =                 0.0102  * (1-fp)    +    0.0060  * fp
+crystallineRadiusRear(fp)         =                -0.0060  * (1-fp)    +   -0.0055  * fp
+corneaToCrystallineDistance(fp)   =                 0.00305 * (1-fp)    +    0.00265 * fp
+crystallineThickness(fp)          =                 0.0040  * (1-fp)    +    0.0045  * fp
+crystallineN(fp, w)               =      crystallineNin(w)  * (1-fp)    +    crystallineNnp(w) * fp    # Crystalline lens refract index
+
+
+# As we vary the focusing parameter fp from 0 to 1, these five functions vary linearly, resulting in incremental changes in the eye 
+# model focus. As fp runs from 0 to 1, accommodation increases from the relaxed eye state (fp=0) to the fully accommodated eye (fp=1).
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# LE GRAND FULL THEORETICAL EYE: Lag of accommodation data (the wavelength the eye focuses on the retina according to accommodation).
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# In this section, we encode lag of accommodation data, empirically measured for ten people by Alexandre Ivanoff, into ten functions by 
+# means of curve fitting. The ten functions are named focusWavelength_01(fp), focusWavelength_02(fp), etc, one function for each 
+# person. These functions return the wavelength the person brings into focus on their retina for any specified degree of accommodation.
+# These ten functions allow our Le Grand eye to simulate the lag of accommodation characteristics of any of the ten Ivanoff subjects.
+
+# The Ivanoff lag of accommodation data is provided as a graph on page 46 of Yves Le Grand's 1967 book "Form and Space Vision". This  
+# graph displays ten curves, one for each person, indicating the wavelength in focus on the retina at different levels of accommodative 
+# demand, namely 0, 0.5, 1, 1.5, 2 and 2.5 dioptres, which correspond to object distances of infinity, 2, 1, 0.667, 0.5 and 0.4 metres 
+# (accommodative demand is the reciprocal of the object distance in metres). The Ivanoff accommodative lag data was extracted from the
+# graph, and is tabulated in the table below.
+
+# When curve fitting this accommodative lag data into ten functions, instead of expressing the wavelength in focus on the retina as a  
+# function of accommodative demand, we express it as a function of the focusing parameter fp, as this enables us to utilise the  
+# accommodative lag functions within our Le Grand eye model. The wavelength in focus was expressed as a function of fp using the 
+# following approach:
+
+# In the table below, when focusing on an object at 0.4 metres distance, we see that person 1 brings a wavelength of 495 nm into focus  
+# on their retina. For the Le Grand schematic eye, we can calculate the value of fp that will bring this wavelength into focus on the  
+# schematic retina when the object distance is 0.4 metres. This value of fp is 0.2873, calculated using the autoFocus() function in the  
+# way described below. So the wavelength 495 nm becomes associated with fp = 0.2873 as a data point. We repeat this process for all six  
+# object distances that person 1 views, in order to create the six data points of wavelength and fp value, as shown in the table column 
+# 'Person 01'. We then perform a curve fit on these six data points, to create the function focusWavelength_01(fp). This function tells
+# us what wavelength the Le Grand schematic eye should bring into focus on the schematic retina when the degree of accommodation is fp, 
+# thereby allowing the Le Grand eye to simulate the lag of accommodation characteristics of a real person, person 1 in this case. We   
+# repeat this process for all ten Ivanoff subjects in the table, so that the Le Grand schematic eye can then simulate the lag of 
+# accommodation characteristics of any of the ten Ivanoff subjects.
+
+# The Ivanoff lag of accommodation graph was obtained from page 46 of the book: Yves Le Grand. "Form and Space Vision". Bloomington: 
+# Indiana University Press; 1967. This Ivanoff data is originally from the book: Alexandre Ivanoff. "Les Aberrations de l’Oeil, Leur 
+# Rôle Dans L’accommodation". Éditions de la Revue d’optique théorique et instrumentale; 1953.
+
+# Numerical data for each of the ten Ivanoff subjects (comprising the six data points of accommodative demand and wavelength in focus)
+# was extracted from a scanned  digital image of the Ivanoff graph using https://plotdigitizer.com/app
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Ivanoff Lag of Accommodation Data
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Object     Accomm
+# Distance   Demand     Person 01   Person 02   Person 03   Person 04   Person 05   Person 06   Person 07   Person 08   Person 09   Person 10
+# ~~~~~~~~   ~~~~~~     ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~  ~~~~~~~~~~
+# Infinity   0.0 D      726 0.0000  716 0.0000  700 0.0000  697 0.0000  685 0.0000  679 0.0000  673 0.0000  666 0.0000  656 0.0000  642 0.0000  
+# 2 m        0.5 D      644 0.0517  627 0.0435  634 0.0598  594 0.0249  605 0.0440  610 0.0530  589 0.0368  599 0.0520  578 0.0382  594 0.0657  
+# 1 m        1.0 D      597 0.1159  557 0.0803  590 0.1249  538 0.0695  573 0.1176  578 0.1268  547 0.0969  567 0.1243  531 0.0895  547 0.1198  
+# 0.667 m    1.5 D      560 0.1789  495 0.1019  567 0.2011  506 0.1298  553 0.1956  562 0.2089  520 0.1643  548 0.2024  500 0.1487  515 0.1796  
+# 0.5 m      2.0 D      528 0.2383  452 0.1298  553 0.2801  476 0.1830  541 0.2761  553 0.2923  501 0.2348  535 0.2811  481 0.2171  495 0.2472  
+# 0.4 m      2.5 D      495 0.2873  432 0.1873  542 0.3562  451 0.2346  536 0.3581  542 0.3677  487 0.3056  526 0.3582  472 0.2943  484 0.3210  
+#
+# Emmetro Axial Length: 0.0243956   0.0243848   0.0243668   0.0243633   0.0243490   0.0243416   0.0243341   0.0243251   0.0243119   0.0242926
+# Lag of Accom at 0.4m: 1.09 D      1.61 D      0.69 D      1.37 D      0.68 D      0.63 D      0.98 D      0.68 D      1.04 D      0.89 D                      
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# The first column of the above table gives the object distance (in metres) of the stimulus shown to the ten Ivanoff subjects. The 
+# second column shows the accommodative demand (in dioptres) of that stimulus. The columns labelled 'Person 01' to 'Person 10' contain 
+# the wavelength each subject brings into focus on their retina when viewing the stimulus at the specified object distance. To the 
+# immediate right of the wavelength value is the calculated fp value needed to get the Le Grand eye model to focus that wavelength onto
+# its schematic retina for the given object distance. The value of fp is always 0.0000 for objects at infinity, as here we are using an 
+# emmetropic Le Grand eye.
+
+# The fp values in the above table are calculated using fp = autoFocus(objectDistance, w, emmetropicAxialLength, 0.5, 0.5), with 
+# objectDistance set to the object distance in the first column, w set to the wavelength in focus for that person at the given object
+# distance, and the emmetropicAxialLength set to the person's equivalent Le Grand eye emmetropic axial length, which is given in the 
+# table in metres. The function autoFocus() is defined later in this script.
+
+# When we set up the Le Grand eye model to simulate the lag of accommodation characteristics of a real person from the Ivanoff data, we 
+# want the emmetropic axial length of the model to reflect the axial length of that person. The eye axial lengths for the Ivanoff  
+# subjects are not known, but from the Ivanoff data, we know the wavelength in focus on the person's retina when their eye is in a  
+# relaxed state and gazing at infinity. Thus, when the Le Grand schematic eye model is in a relaxed state (that is, when fp = 0), we  
+# want the model to focus that relaxed wavelength onto the schematic retina. So we set the emmetropic axial length of the eye model
+# accordingly. The way we calculate the Le Grand eye model emmetropic axial length for each Ivanoff subject is detailed below in the
+# comments for the function emmetropicAxialLength().
+
+# The ten lag of accommodation functions focusWavelength_01(fp), focusWavelength_02(fp), etc, were derived using the "exponential" 
+# curve fit at https://curve.fit on the 6 data points provided for each of the ten people in the above table (each data point 
+# comprising wavelength in focus and fp value). The "exponential" curve fit is of the form y = a * exp(bx) + c, where a, b and c are 
+# constants to be found. At https://curve.fit, the fp value is placed in the x column, and the wavelength in focus value is placed in 
+# the y column. In the δy column, the δy uncertainty for the fp = 0 data points is set to 0.0001, to ensure the resulting exponential 
+# equation from the curve fit passes exactly through this data point (so when fp = 0, the ten lag of accommodation functions return the 
+# exact wavelength in focus in the relaxed eye state when gazing at infinity (for example, 726 nm for person 1). For other values of 
+# fp, δy is set to 2.
+
+# Note: the person 2 exponential curve was a bit wayward after curve fitting, with the wavelength in focus being unrealistically low
+# (at around 300 nm) when fp = 1. So to constrain the curve to physiologically plausible wavelengths, we add an extra synthetic data  
+# point to the curve fitting, which is the point: wavelength = 420 nm when fp = 0.3.
+
+# In the table above, we give the dioptric lag of accommodation for the schematic eyes of each Ivanoff subject when the eye is viewing 
+# an object at a distance of 0.4 metres. Person 2 has the highest lag of accommodation at 1.61 dioptres. Person 6 has the lowest lag at  
+# 0.63 dioptres. This dioptric lag given in the table is calculated as follows:
+
+# When an Ivanoff subject is viewing an object 0.4 metres away, due to lag of accommodation, they will bring bluer wavelengths from 
+# the image into focus on their retina. The table above gives the fp value that focuses this bluer wavelength onto the retina of the 
+# schematic eye of that subject for an object distance of 0.4 metres (an accommodative demand of 2.5 dioptres). And the table gives the 
+# red wavelength w focused on the retina in the relaxed eye when the object is at infinity. We insert these values of fp and w into the 
+# equation: eyeImageDist(objectDistance, w, fp) = emmetropicAxialLength(0), and then manually adjust the value of objectDistance in the 
+# equation until the value of the left side of the equation matches the right. Once we have found the correct objectDistance via manual 
+# tweaking, we divide it into 1, in order to get the accommodative demand that brings the red wavelength into focus on the retina when 
+# the schematic eye accommodation is set by the fp value we specified. Then by subtracting this accommodative demand from 2.5 dioptres, 
+# we get the accommodative lag in dioptres when the Ivanoff subject's schematic eye is viewing an object at 0.4 metres.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Lag of accommodation characteristics for persons 1 to 10 from the Ivanoff data, with each person's characteristics encoded into a 
+# function. Given the degree of ocular accommodation fp, the function returns the wavelength in focus at that state of accommodation. 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+focusWavelength_01(fp) = 2.828e+02 * exp(-5.357e+00 * fp) + 4.432e+02
+focusWavelength_02(fp) = 3.283e+02 * exp(-9.847e+00 * fp) + 3.877e+02
+focusWavelength_03(fp) = 1.633e+02 * exp(-8.683e+00 * fp) + 5.367e+02
+focusWavelength_04(fp) = 2.330e+02 * exp(-1.770e+01 * fp) + 4.640e+02 
+focusWavelength_05(fp) = 1.439e+02 * exp(-1.551e+01 * fp) + 5.411e+02
+
+focusWavelength_06(fp) = 1.318e+02 * exp(-1.236e+01 * fp) + 5.472e+02
+focusWavelength_07(fp) = 1.804e+02 * exp(-1.367e+01 * fp) + 4.926e+02
+focusWavelength_08(fp) = 1.377e+02 * exp(-1.103e+01 * fp) + 5.283e+02
+focusWavelength_09(fp) = 1.859e+02 * exp(-1.298e+01 * fp) + 4.701e+02
+focusWavelength_10(fp) = 1.998e+02 * exp(-5.203e+00 * fp) + 4.422e+02
+ 
+ 
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# LE GRAND FULL THEORETICAL EYE: Specification of functions focusWavelength(fp), relaxedWavelength() and emmetropicAxialLength().
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# The three functions below, focusWavelength(fp), relaxedWavelength() and emmetropicAxialLength(), set the lag of accommodation 
+# characteristics and the eye emmetropic axial length in our Le Grand eye model to those of a particular person from the Ivanoff data.
+# Selecting the appropriate Ivanoff subject is achieved by setting the global variable 'person' to 1 through to 10. 
+# These functions use the == ? : ternary conditional. 
+ 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# focusWavelength(fp)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function returns the wavelength in focus on the schematic retina for the Ivanoff individuals for the degree of eye accommodation
+# specified by the focusing parameter fp. The global variable 'person' specifies the individual whose wavelength in focus is returned.
+
+focusWavelength(fp) = (person == 1)  ?  focusWavelength_01(fp)  :  \
+                      (person == 2)  ?  focusWavelength_02(fp)  :  \
+                      (person == 3)  ?  focusWavelength_03(fp)  :  \
+                      (person == 4)  ?  focusWavelength_04(fp)  :  \
+                      (person == 5)  ?  focusWavelength_05(fp)  :  \
+                      (person == 6)  ?  focusWavelength_06(fp)  :  \
+                      (person == 7)  ?  focusWavelength_07(fp)  :  \
+                      (person == 8)  ?  focusWavelength_08(fp)  :  \
+                      (person == 9)  ?  focusWavelength_09(fp)  :  \
+                                        focusWavelength_10(fp)
+  
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~                                                     
+# relaxedWavelength()
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function returns the wavelength in focus on the retina when looking at infinity in a relaxed eye state for the Ivanoff  
+# individuals. The global variable 'person' specifies the individual whose relaxed wavelength is returned. We use a dummy function
+# argument (whose value is ignored) as in gnuplot it is not possible to define a function with no arguments.
+
+relaxedWavelength(dummy) = focusWavelength(0)    # The relaxed wavelength in focus obtained from focusWavelength(fp) by setting fp = 0                                
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# emmetropicAxialLength()      
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function returns the equivalent Le Grand eye model emmetropic axial length for the Ivanoff individuals. The emmetropic axial 
+# length is slightly different for each person. Setting the global variable 'person' to 1, 2, 3, etc specifies the individual whose    
+# emmetropic axial length is returned by this function. We use a dummy function argument (whose value is ignored) as in gnuplot it is  
+# not possible to define a function with no arguments.
+
+emmetropicAxialLength(dummy) =  (person == 1)  ?  0.0243956  :  (person == 2)  ?  0.0243848  :  (person == 3)  ?  0.0243668  :        \
+                                (person == 4)  ?  0.0243633  :  (person == 5)  ?  0.0243490  :  (person == 6)  ?  0.0243416  :        \
+                                (person == 7)  ?  0.0243341  :  (person == 8)  ?  0.0243251  :  (person == 9)  ?  0.0243119  :        \
+                                                  0.0242926
+
+# Alternatively, it is possible to define the above function via the following equation:
+# emmetropicAxialLength(dummy) = eyeImageDist(1e90, relaxedWavelength(0), 0)  
+# Although there is a slight difference, as the first function returns figures that are rounded to 7 decimal places.
+
+# When we use the Le Grand eye model to simulate the eye of a real person from the Ivanoff lag of accommodation data, we want the 
+# model to reflect the emmetropic axial length of that person. We calculate the equivalent Le Grand model emmetropic axial length for 
+# each Ivanoff subject by utilising the wavelength in focus on that person's retina, derived from the Ivanoff data, when the person 
+# gazes at infinity with a relaxed eye. This relaxed wavelength is given in the table above, and is also given by the function 
+# relaxedWavelength(0). We place this relaxed wavelength into the function eyeImageDist(1e90, relaxedWavelength(0), 0) in order to 
+# determine the image distance at this wavelength, when the eye model is in a relaxed state (fp = 0) looking at infinity (the large 
+# number 1e90 is used to represent infinity). This image distance becomes the eye model's emmetropic axial length for that person. 
+# Note that the image distance returned by eyeImageDist() is measured from the apex of the front corneal surface.
+
+# If we calculate the emmetropic axial length of the schematic eye for the 589.3 nm standard wavelength used by Le Grand in his model,   
+# we get a value of 0.024210 metres. This value is calculated by eyeImageDist(1e90, 589.3, 0). An independent calculation by hand gets 
+# the same result. Le Grand himself arrives at a value of 0.024196 metres for the emmetropic axial length of his eye model in a relaxed  
+# state (see his book: Yves Le Grand. "Form and Space Vision". Bloomington: Indiana University Press; 1967. Page 9).
+
+# Usage note: we use the variable eyeAxialLength to represent the length of the schematic eye along its optical axis (the axial  
+# distance in metres between the apex of the front corneal surface and the schematic retina). As we vary eyeAxialLength in our Le Grand  
+# eye model, this represents different degrees of axial myopia or axial hyperopia. Whereas to denote the eye axial length when the   
+# model is in a state of emmetropia, we use the variable emmetropicAxialLength.
+
+meanEmmetropicAxialLength = 0.0243465 
+# Mean emmetropic eye axial length for the ten individuals from the Ivanoff lag of accommodation data.
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# lineColour() 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function returns the colour code used for drawing the graph curves for each individual person from the Ivanoff data (each person
+# has their own unique colour). 
+                                
+lineColour(dummy) = (person == 1)  ?  "#6969EF"  :  (person == 2)  ?  "#FA3B3B"  :  (person == 3)  ?  "#B16328"  :                    \
+                    (person == 4)  ?  "#37F226"  :  (person == 5)  ?  "#FF4EE6"  :  (person == 6)  ?  "#FABE1A"  :                    \
+                    (person == 7)  ?  "#1B953B"  :  (person == 8)  ?  "#2BE3FD"  :  (person == 9)  ?  "#F3E749"  :  "#C371FF"
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# PARAXIAL APPROXIMATION GEOMETRIC OPTICS FUNCTIONS
+# The following functions are based on the paraxial refraction equation and the thin lens equation.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# thinLensImageDist(P, objectDistance)                 Thin lens equation 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# For an optical system comprising a thin lens of dioptre power P, and an object located at a distance of objectDistance metres from the lens, this 
+# function returns the image distance from the lens (positive values of image distance indicate a real image to the right of the lens; 
+# negative values indicate a virtual image to the left of the lens). We assume that the lens material is surrounded by air.
+
+# The calculation of image distance is based on the thin lens equation  P  =  1/f  =  1/o + 1/i  (aka the Gaussian lens formula).
+
+thinLensImageDist(P, objectDistance) =  ( P - 1.0/objectDistance == 0 )  ?  1e90  :  1.0 / ( P - 1/objectDistance )  
+
+# The above ==?: ternary conditional operator used to prevent division by zero.
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# surfaceImageDist(R, N1, N2, objectDistance)          Paraxial refraction equation  
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+# For a point of light at a distance objectDistance to the left of a spherical surface of radius R (R is positive for a convex surface, 
+# as viewed from the left side), where the media have refractive indices N1 to the left of the surface and N2 to the right, this 
+# function returns the distance of the image from this surface (positive image distance values imply real images to the right of the 
+# surface).
+
+# The calculation is based on the paraxial refraction equation N1/o + N2/i = (N2-N1)/R, which calculates the refraction at a spherical 
+# surface under the paraxial approximation (derives from Snell's law at small angles). Also called the Gaussian refraction formula.
+# Rearranging, we get i = N2/( (N2-N1)/R - N1/o )
+
+surfaceImageDist(R, N1, N2, objectDistance)  =  ( 1.0 *(N2-N1)/R - N1/objectDistance == 0 )  ?  1e90  :  1.0 * N2 / ( (N2-N1)/R  -  N1/objectDistance ) 
+
+# The ==?: ternary conditional operator used to prevent division by zero. When the image is at infinity, this function returns 1e90.
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# CORRECTIVE LENS FUNCTIONS
+# The following functions relate to ophthalmic corrective lenses, and are based on the lensmaker's equation and the thin lens equation.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# correctiveN1(w) and correctiveN2(w) set the refractive index dispersion formula for the optical material used in the ophthalmic 
+# corrective lenses placed in front of the schematic eye. Up to two lenses can be placed in front of the schematic eye in contact with 
+# each other (as a doublet lens), at a distance of vertexDistance from the apex of the front corneal surface. 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Set material of corrective lenses 
+
+correctiveN1(w) = refractiveIndexCR39(w)            # The corrective lens farthest from cornea (1st lens the light passes through)
+correctiveN2(w) = refractiveIndexPolycarbonate(w)   # The corrective lens closest to the cornea (2nd lens the light passes through)
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# correctiveLensPower(powerCor, w)                     Lensmaker's equation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# For a lens of dioptre power powerCor at the standardWavelength, this function returns the power of the lens for the wavelength w (in
+# nanometres). The dispersion formula for the optical material of the lens is set up in correctiveN1(w) and correctiveN2(w).
+
+# Lens power calculations are based on the lensmaker's equation which, for a thin lens material of refractive index N placed in a 
+# surrounding medium of air, is of the form: Power = (N - Nair) * ( 1/R1 - 1/R2 ). For a given power, the radii of curvature R1 and R2 
+# of a lens are constant, so we have: Power / (N - Nair) = constant for all wavelengths.
+
+# So if Ps and Ns are the power and refractive index of the lens at the standard wavelength, and Pc and Nc the same at wavelength w, 
+# we have Ps / (Ns - Nair) = Pc / (Nc - Nair). Thus rearranging we have Pc = Ps * (Nc - Nair) / (Ns - Nair).
+
+# Up to two corrective lenses can be placed in contact in front of the eye (as a doublet lens) at vertexDistance from the apex of the 
+# front corneal surface, so we define two functions for these:
+
+correctiveLens1Power(powerCor, w) = powerCor * (correctiveN1(w) - airN(w)) / (correctiveN1(standardWavelength) - airN(standardWavelength))
+correctiveLens2Power(powerCor, w) = powerCor * (correctiveN2(w) - airN(w)) / (correctiveN2(standardWavelength) - airN(standardWavelength))
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# correctiveLensImageDist(powerCor, w, objectDistance)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# For a corrective lens having a dioptre power of powerCor at the standardWavelength, this function returns the image distance for the 
+# wavelength w, when the object is objectDistance away.
+
+# Up to two corrective lenses can be placed in front of the model eye (at vertexDistance away), so we define two functions for these:
+
+correctiveLens1ImageDist(powerCor, w, objectDistance) = thinLensImageDist(correctiveLens1Power(powerCor,w), objectDistance)
+correctiveLens2ImageDist(powerCor, w, objectDistance) = thinLensImageDist(correctiveLens2Power(powerCor,w), objectDistance)
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# SOME REQUIRED MATHEMATICAL FUNCTIONS
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# clamp(lower, upper, currentValue)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function constrains a value to lie within a specified range defined by the limits lower and upper, that is, ensuring that the
+# value returned is >= lower and <= upper.
+
+clamp(lower, upper, currentValue) = currentValue < lower ? lower   :   currentValue > upper ? upper   :    currentValue
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# max(a, b) and min(a, b) 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# max(a, b) returns the largest of the two values a and b
+# min(a, b) returns the smallest of the two values a and b
+
+max(a, b) = (a > b) ? a : b
+min(a, b) = (a < b) ? a : b
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# EYE IMAGE FOCUSING FUNCTIONS
+# The following functions involve our Le Grand schematic eye model focusing light rays.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# eyeImageDist(objectDistance, w, fp)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function returns the image distance (in metres) for the light wavelength w (in nanometres) when the Le Grand eye model views a 
+# point object at objectDistance away (in metres), with the degree of eye accommodation set by fp. 
+
+# The eyeImageDist() function implements the Le Grand Full theoretical Eye model, employing paraxial approximation geometric optics to 
+# calculate the image distance.
+
+# fp = 0 sets the Le Grand eye to relaxed accommodation, fp = 1 sets the eye to the near point of accommodation. The focusing parameter
+# fp can be set anywhere in the range from 0 to 1 to achieve intermediate levels of accommodation.
+
+# objectDistance is the distance (in metres) from the object to the apex of the front corneal surface of the eye. The image distance is 
+# the axial distance (in metres) from the apex of the front corneal surface to the point where the image is focused by the eye model. 
+
+# In this chain calculation, the image distance output from the current eye surface being processed is added to the distance to the 
+# next eye surface, and that value becomes the object distance input into the next surface. The image distance value of the current 
+# eye surface is the virtual object distance for the next surface, so we need to place a minus sign in front of this value to indicate
+# it is virtual.
+
+eyeImageDist(objectDistance, w, fp) =                                                                                                \
+                                                  corneaThickness  +  corneaToCrystallineDistance(fp)  +  crystallineThickness(fp) + \
+    surfaceImageDist(crystallineRadiusRear(fp),   crystallineN(fp,w),  vitreousN(w),          crystallineThickness(fp) -             \
+    surfaceImageDist(crystallineRadiusFront(fp),  aqueousN(w),         crystallineN(fp,w),    corneaToCrystallineDistance(fp) -      \
+    surfaceImageDist(corneaRadiusRear,            corneaN(w),          aqueousN(w),           corneaThickness -                      \
+    surfaceImageDist(corneaRadiusFront,           airN(w),             corneaN(w),            objectDistance)))) 
+ 
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# eyeImageDistSingleCorLens(objectDistance, powerCor, w, fp)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# As above, but includes a single corrective lens located at vertexDistance from the apex of the front surface of the cornea:
+
+eyeImageDistSingleCorLens(objectDistance, powerCor, w, fp) =                                                                         \
+                                                  corneaThickness  +  corneaToCrystallineDistance(fp)  +  crystallineThickness(fp) + \
+    surfaceImageDist(crystallineRadiusRear(fp),   crystallineN(fp,w),  vitreousN(w),          crystallineThickness(fp) -             \
+    surfaceImageDist(crystallineRadiusFront(fp),  aqueousN(w),         crystallineN(fp,w),    corneaToCrystallineDistance(fp) -      \
+    surfaceImageDist(corneaRadiusRear,            corneaN(w),          aqueousN(w),           corneaThickness -                      \
+    surfaceImageDist(corneaRadiusFront,           airN(w),             corneaN(w),            vertexDistance -                       \
+    correctiveLens1ImageDist(powerCor, w,                                                     objectDistance - vertexDistance))))) 
+
+# In eyeImageDistSingleCorLens(), the object distance is still measured from the apex of the front of corneal surface, not from the
+# corrective lens.
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# eyeImageDistCorLens(objectDistance, powerCor1, powerCor2, w, fp)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# As above, but includes two corrective lenses in contact (as a doublet lens) located at vertexDistance from the apex of the front 
+# surface of the cornea. The power (at the standard wavelength) of the first corrective lens that light from the object passes through  
+# is powerCor1, and the power of the second corrective lens is powerCor2. If only one corrective lens is required, this can be set in
+# powerCor1, setting powerCor2 to 0. 
+
+eyeImageDistCorLens(objectDistance, powerCor1, powerCor2, w, fp) =                                                                   \
+                                                  corneaThickness  +  corneaToCrystallineDistance(fp)  +  crystallineThickness(fp) + \
+    surfaceImageDist(crystallineRadiusRear(fp),   crystallineN(fp,w),  vitreousN(w),          crystallineThickness(fp) -             \
+    surfaceImageDist(crystallineRadiusFront(fp),  aqueousN(w),         crystallineN(fp,w),    corneaToCrystallineDistance(fp) -      \
+    surfaceImageDist(corneaRadiusRear,            corneaN(w),          aqueousN(w),           corneaThickness -                      \
+    surfaceImageDist(corneaRadiusFront,           airN(w),             corneaN(w),            vertexDistance -                       \
+    correctiveLens2ImageDist(powerCor2, w,                                                    0 -                                    \
+    correctiveLens1ImageDist(powerCor1, w,                                                    objectDistance - vertexDistance)))))) 
+
+# In eyeImageDistCorLens(), the object distance is still measured from the apex of the front of corneal surface, not from the 
+# corrective lens.
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# emsleyEyeImageDist(objectDistance, w, fp) 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This is an adapted version of the Emsley reduced eye, in which the dioptre power of its single spherical surface is varied in order
+# to simulate accommodation. We use the focusing parameter fp to adjust the radius of curvature (and thus the power) of the Emsley eye
+# surface in order to achieve accommodation. We have matched the focusing power of the Emsley eye to that of the Le Grand eye.
+
+emsleyEyeImageDist(objectDistance, w, fp) = surfaceImageDist(0.006047249 - fp * 0.000652112, airN(w), waterN(w), objectDistance)
+
+# To match the focusing power of the Emsley eye to the Le Grand eye at both the relaxed (fp = 0) and accommodated (fp = 1) states, we 
+# first place the object at infinity, and adjust the Emsley eye surface radius of curvature so that this eye model has the same focal 
+# length as the Le Grand eye in its relaxed state, at the standard wavelength of 587.56 nm. We then set the object distance to 0.2 
+# metres, and we adjust the radius of curvature of the Emsley eye surface so that its image distance is the same as the image distance 
+# for this object in the fully accommodated Le Grand eye. So now we know the two Emsley eye surface radius of curvatures that can
+# match the Le Grand eye in its relaxed and fully accommodated states. Then just as we did with the Le Grand eye, we use a linear
+# accommodation formula to interpolate between the relaxed and fully accommodated states in the Emsley eye, using the focusing
+# parameter fp.
+
+
+# This version of the Emsley eye incorporates up to two corrective lenses in contact (as a doublet lens) at vertexDistance from the 
+# front cornea:
+
+emsleyEyeImageDistCorLens(objectDistance, powerCor1, powerCor2, w, fp) =                          \
+    surfaceImageDist(0.006047249 - fp * 0.000652112, airN(w), waterN(w), vertexDistance -         \
+    correctiveLens2ImageDist(powerCor2, w, 0 -                                                    \
+    correctiveLens1ImageDist(powerCor1, w, objectDistance - vertexDistance)))
+
+
+# If the variable "eyeModel" is set to 2, then we override the Le Grand eye model when plotting graphs in this script file, and 
+# instead use the Emsley reduced eye model.
+if(eyeModel==2) {
+
+    eyeImageDist(objectDistance, w, fp) = emsleyEyeImageDist(objectDistance, w, fp) 
+
+    eyeImageDistCorLens(objectDistance,powerCor1,powerCor2,w,fp) = emsleyEyeImageDistCorLens(objectDistance,powerCor1,powerCor2,w,fp)
+}
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# autoFocus(objectDistance, w, eyeAxialLength, 0.5, 0.5)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Always call this function with the last two arguments set to 0.5 and 0.5 (they are used to prime the binary convergence).
+
+# This function is an inverse of eyeImageDist(), as this function returns the precise value of fp necessary to focus light of 
+# wavelength w from a point object at objectDistance away from the front corneal surface of the eye onto the retina (the retina is 
+# located a distance of eyeAxialLength metres from the front corneal surface). The paraxial approximation is used for calculations.
+
+# This autoFocus function uses a binary search to converge to the correct value for fp at which light of wavelength w is focused on the
+# retina. By recursive calls to itself, the autoFocus() function gets closer and closer to the correct value for fp. 
+
+# We start the binary search by setting fp = 0.5, and then calling the eyeImageDist(objectDistance, w, fp) function, and this 
+# eyeImageDist() function then returns the image distance for that objectDistance. If this image distance is greater than the 
+# eyeAxialLength, then we know we need to increase fp, so as to increase the eye's refractive power, and thus shorten the image focal
+# length. 
+
+# Conversely if the image distance returned by the call to eyeImageDist() is less than the eyeAxialLength, we know we need to decrease
+# fp, so as to decrease the eye's refractive power, and thus increase the image distance. We keep adjusting fp like this until we get 
+# an image distance equal to the eyeAxialLength, which then means the image is in focus on the retina. 
+
+# To implement this automatic focusing via this binary search, we recursively call the autoFocus() function. On each recursive call, 
+# we either decrease fpConverge by the amount 'jump' to shorten the image distance, or increase by amount jump to lengthen the image  
+# distance, as appropriate. We reduce the jump value by a factor of 2 on each recursion to create smaller and smaller steps converging
+# onto the correct value of fp. Once the value of jump is reduced to < 0.0000001, we exit the recursion and return the value of 
+# fpConverge, which becomes the precise fp value that focuses the eye model.
+
+# Note that the value of fp returned by this function is constrained to the range 0 to 1. 
+
+
+autoFocus(objectDistance, w, eyeAxialLength, fpConverge, jump) = jump < 0.0000001 ?               \
+    clamp(0, 1, fpConverge) :                                                                     \
+    eyeImageDist(objectDistance, w, fpConverge) > eyeAxialLength ?                                \
+    autoFocus(objectDistance, w, eyeAxialLength, fpConverge + jump, jump/2.0 ) :                  \
+    autoFocus(objectDistance, w, eyeAxialLength, fpConverge - jump, jump/2.0 )
+
+
+# The above autoFocus() definition has two nested ternary conditional (?:) operators that implement an equivalent nested IF statement  
+# of the form:
+
+# IF jump < 0.0000001 THEN  
+#    exit recursion, returning the current value for fpConverge, using clamp(0, 1, fpConverge) to constrain this value from 0 to 1
+# ELSE jump >= 0.0000001 
+#    IF      eyeImageDist(fpConverge) > eyeAxialLength    THEN    recursively call autoFocus() with fpConverge increased 
+#    ELSE IF eyeImageDist(fpConverge) < eyeAxialLength    THEN    recursively call autoFocus() with fpConverge decreased
+#    END IF
+# END IF
+
+# Note: this autoFocus function could fail to converge to the correct value of fp if there were local maxima or minima in the function 
+# eyeImageDist(objectDistance, w, fp) as fp varies, or if eyeImageDist() were not monotonic with respect to fp. However, the graph of 
+# eyeImageDist(objectDistance, w, fp) versus fp has no local maxima or minima and is monotonic, as can be verified by plotting this 
+# graph.
+
+# Note: for an object stimulus with an accommodative demand of D dioptres, the value of focusing parameter fp that will focus that 
+# stimulus is given by fp = autoFocus(1/D, w, eyeAxialLength, 0.5, 0.5). In this way, we can express dioptres of accommodative demand
+# in terms of fp.
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# autoFocusLoA(objectDistance, eyeAxialLength, 0.5, 0.5)       This version of the autofocus() function includes lag of accommodation
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Always call this function with the last two arguments set to 0.5 and 0.5 (they are used for the binary convergence).
+
+# This function is identical to autoFocus() except that it incorporates lag of accommodation, whereby the eye brings into focus 
+# increasingly shorter (bluer) wavelengths on the retina as accommodation increases.
+
+# The degree of accommodation is indicated by fp, and the wavelength that gets focused on the retina is determined by the function
+# focusWavelength(fp) which is used internally in this autoFocusLoA() function.
+
+# During its autofocusing operation, this autoFocusLoA() function thus simulates the lag of accommodation found in real eyes.
+
+autoFocusLoA(objectDistance, eyeAxialLength, fpConverge, jump) = jump < 0.0000001 ?               \
+    clamp(0, 1, fpConverge) :                                                                     \
+    eyeImageDist(objectDistance, focusWavelength(fpConverge), fpConverge) > eyeAxialLength ?      \
+    autoFocusLoA(objectDistance, eyeAxialLength, fpConverge + jump, jump/2.0 ) :                  \
+    autoFocusLoA(objectDistance, eyeAxialLength, fpConverge - jump, jump/2.0 )
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# autoFocusLoACorLens(objectDistance, powerCor1, powerCor2, eyeAxialLength, 0.5, 0.5)
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Always call this function with the last two arguments set to 0.5 and 0.5 (they are used for the binary convergence).
+
+# This function is identical to autoFocusLoA() except that one or two corrective lenses of dioptre power powerCor1 and powerCor2 are 
+# placed in contact (as a doublet lens) in front of the eye, at vertexDistance away from the apex of the front corneal surface. In this 
+# function, the object distance is still measured from the apex of the front surface of the cornea, not from the corrective lens.
+# If only one corrective lens is required, this can be set in powerCor1, setting powerCor2 to 0. 
+
+autoFocusLoACorLens(objectDistance, powerCor1, powerCor2, eyeAxialLength, fpConverge, jump) = jump < 0.0000001 ?                      \
+    clamp(0, 1, fpConverge) :                                                                                                         \
+    eyeImageDistCorLens(objectDistance, powerCor1, powerCor2, focusWavelength(fpConverge), fpConverge) > eyeAxialLength ?             \
+    autoFocusLoACorLens(objectDistance,  powerCor1, powerCor2, eyeAxialLength, fpConverge + jump, jump/2.0 ) :                        \
+    autoFocusLoACorLens(objectDistance,  powerCor1, powerCor2, eyeAxialLength, fpConverge - jump, jump/2.0 )
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ametropicAxialLength(powerCor1, powerCor2)     
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function calculates the schematic eye axial length for a specified degree of axial myopia or hyperopia.
+
+# Given the dioptre powers of the one or two corrective lenses placed in contact (as a doublet) in front of the eye at vertexDistance 
+# from the apex of the front corneal surface, this function calculates the eye ametropic axial length that corresponds to the degree of  
+# myopia or hyperopia the corrective lens or lenses imply. To calculate this ametropic axial length, we place a model corrective lens
+# or lenses with the specified dioptre power (measured at the standardWavelength) in front of the relaxed schematic eye gazing at
+# infinity, and calculate the focal length for light at the relaxed wavelength (which is the red wavelength the relaxed eye focuses on
+# the retina when looking at infinity). The focal length is measured from the apex of the front corneal surface. This focal length is
+# the eye axial length corresponding to the degree of myopia or hyperopia specified by the corrective lens or lenses. 
+
+# The relaxed wavelength is slightly different for each of the ten Ivanoff subjects, and in this function, the relaxed wavelength used 
+# depends on which Ivanoff subject is selected by the global variable 'person'. 
+
+# If only one corrective lens is required, this can be set in powerCor1, setting powerCor2 to 0. 
+
+ametropicAxialLength(powerCor1, powerCor2) = eyeImageDistCorLens(1e90, powerCor1, powerCor2, relaxedWavelength(0), 0)
+
+
+# To base the myopic (or hyperopic) ametropic eye axial length calculation on the focal length of the corrective lens plus relaxed eye   
+# at the standard wavelength, replace relaxedWavelength(0) with standardWavelength in the above function, giving the following:
+# ametropicAxialLength(powerCor1, powerCor2) = eyeImageDistCorLens(1e90, powerCor1, powerCor2, standardWavelength, 0)
+
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# BLUR FUNCTIONS AND VISUAL FEEDBACK SIGNAL FUNCTIONS
+# The visual feedback signal is calculated from blur circle diameters for different wavelengths of light. In this section, we set up 
+# blur() functions that calculate the blur circle sizes. These are then used to set up a visual feedback signal function VFSignal().
+# We also define the function eyeAiryDiskDiameter() which is needed within the blur() function.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# eyeAiryDiskDiameter(fp, w) 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function returns the eye's Airy disk diameter in metres for the specified light wavelength, and for the state of eye 
+# accommodation given by fp (fp changes the focal length of the eye). The Airy disk diameter returned by this function also depends on 
+# pupil size, which is set in the global variable pupilDiameter. This function is based on the formula:
+
+# Airy disk diameter = 2.44λf/D
+
+# Where: λ = wavelength, f = effective focal length of the lens, D = diameter of the lens. All measurements in metres.
+
+# Blur circles cannot be smaller than the Airy disk, so we use this function to impose an Airy limit on blur circle minimum size in the
+# blur() function defined below.
+
+# The following details how we construct the Airy disk function used in this script:
+
+# The total dioptre power for the Le Grand Full Theoretical Eye in the relaxed state is 59.9404 dioptres, and 67.6767 dioptres when 
+# fully accommodated. This information comes from page 210 of the book: Günter Wyszecki, Walter Stanley Stiles. "Color Science Concepts 
+# and Methods, Quantitative Data and Formulas". Wiley; 1967. The information is also found on page 66 of the book: Yves Le Grand and 
+# Sami El Hage. "Physiological Optics". Springer-Verlag; 1980.
+
+# Le Grand provides the total dioptre power of the relaxed Full Theoretical Eye at various wavelengths, given in the table below. This
+# information comes from page 9 of his book: Yves Le Grand. "Form and Space Vision". Bloomington: Indiana University Press; 1967. 
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~
+#                                  Colour:      Infrared          Red               Yellow            Blue              Violet
+#                         Fraunhofer Line:      Oxygen A          Hydrogen C        Sodium D          Hydrogen F        Calcium G
+#                              Wavelength:      759.4 nm          656.3 nm          589.3 nm          486.1 nm          430.8 nm
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~      ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~       ~~~~~~~~~~~
+# Total eye power relaxed                       59.161            59.585            59.9404           60.771            61.442
+# Total eye power accommodated                 [66.797]          [67.275]           67.6767          [68.6145]         [69.3721]
+
+# However, these books do not provide the total dioptre power for the accommodated Full Theoretical Eye, except at the 589.3 nm 
+# wavelength. So to estimate the accommodated eye total power for the above wavelengths, we use the formula: accommodated eye power = 
+# relaxed eye power * (67.6767 / 59.9404) . Here we assume that multiplying the relaxed total power by the ratio of accommodated to 
+# relaxed total powers at 589.3 nm, we can estimate figures for the accommodated eye total power at other wavelengths. The estimated 
+# accommodated eye total power figures calculated by this method are shown above in square brackets [].
+
+# Note that the effective focal length is 1 / (total power). So applying this formula to the above figures we have:
+
+# Effective focal length relaxed                0.01690           0.01678           0.01668           0.01646           0.01628
+# Effective focal length accommodated           0.01497           0.01486           0.01478           0.01457           0.01442
+
+# Then using curve fitting at https://mycurvefit.com/ (employing a "quartic regression" curve), we create equations that give the  
+# relaxed and fully accommodated effective focal lengths of the Le Grand schematic eye at any arbitrary wavelength w (in nanometres):
+
+relaxedEFL(w)      = 0.008696458 + 0.00004178749*w - 8.636792e-8*w**2 + 8.338927e-11*w**3 - 3.079584e-14*w**4 
+accommodatedEFL(w) = 0.017229160 - 0.00002984273*w + 9.693832e-8*w**2 - 1.233373e-10*w**3 + 5.567018e-14*w**4
+
+# Thus the effective focal length of the Le Grand eye, at an arbitrary state of accommodation fp, and for any wavelength w, can be 
+# calculated by the following linear formula: 
+
+EFL(fp, w) = relaxedEFL(w) * (1-fp) + accommodatedEFL(w) * fp 
+
+# Some effective focal lengths calculated by this EFL(fp, w) function:
+# Blue cone peak sensitivity wavelength 437 nm, relaxed eye,     — Gives effective focal length = 16.30 mm
+# Blue cone peak sensitivity wavelength 437 nm, accommodated eye — Gives effective focal length = 14.44 mm
+# Red  cone peak sensitivity wavelength 564 nm, relaxed eye,     — Gives effective focal length = 16.64 mm
+# Red  cone peak sensitivity wavelength 564 nm, accommodated eye — Gives effective focal length = 14.74 mm
+
+# So finally we can write our Airy disk equation, as a function of both fp and the wavelength w:
+
+eyeAiryDiskDiameter(fp, w) = 2.44 * (w * 0.000000001) * EFL(fp, w) / pupilDiameter
+
+# This Airy disk equation also depends on the global variable pupilDiameter.
+
+# Some Airy disk values calculated by this eyeAiryDiskDiameter(fp, w) function: 
+# Blue cone peak sensitivity wavelength 437 nm, relaxed eye,      and pupil diameter 3 mm — Gives Airy disk diameter = 5.79 μm
+# Blue cone peak sensitivity wavelength 437 nm, accommodated eye, and pupil diameter 3 mm — Gives Airy disk diameter = 5.13 μm
+# Red  cone peak sensitivity wavelength 564 nm, relaxed eye,      and pupil diameter 3 mm — Gives Airy disk diameter = 7.63 μm
+# Red  cone peak sensitivity wavelength 564 nm, accommodated eye, and pupil diameter 3 mm — Gives Airy disk diameter = 6.76 μm
+
+#eyeAiryDiskDiameter(fp, w) = 0   # Uncomment this line to deactivate the imposed Airy disk limit on blur circle minimum size
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# blur(objectDistance, w, blurPlaneOffset, eyeAxialLength)     
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function calculates the diameter (in metres) of the blur circle for light of wavelength w that is projected onto the retina by 
+# a conceptual point object.
+
+# When the blur() function is called, it automatically gets the eye model to autofocus the image of a point object onto the retina 
+# (with lag of accommodation taken into account). The retina is located at a distance of eyeAxialLength from the apex of the front
+# surface of the cornea. After the eye model focuses the image on the retina, the blur() function then calculates and returns the blur
+# circle diameter cast onto the retina for light of wavelength w. This calculation is detailed in the geometric construction below. 
+
+# Note that blur circles can never be smaller than the Airy disk, so we set a minimum blur circle size within the blur() function, such
+# that this function will not return a blur circle diameter smaller than the Airy disk diameter for the eye.  
+#
+# THE FOLLOWING DESCRIBES THE GEOMETRIC CONSTRUCTION WE USE TO CALCULATE BLUR CIRCLE SIZES
+
+# Let eyeImageDistance be our image distance, with respect to the apex of the front surface of the cornea.
+#
+#           retina      
+#   pupil     |         Let the pupil diameter be p, the blur circle diameter on the retina be q, the pupil-to-image point distance 
+#     |\      |         be a, and the image point-to-retina distance be b, then we have:
+#     | \     |       
+#     |  \  /||                        q/p  =  b/a,   so, blur circle diameter q = p * b / a
+#     |p  \/q||
+#     |   /\ ||         In the eye, the pupil (iris aperture) is positioned about 3 mm into the eye (from the front of the cornea), so:
+#     |  /  \|| 
+#     | /     |                        a    =  (eyeImageDistance - 0.003)
+#     |/      |                        b    =  (eyeAxialLength - eyeImageDistance)
+#             |                           
+#                       Thus the blur circle diameter q is given by:
+#     | a  |b |
+#                       q   =   p *       (eyeAxialLength - eyeImageDistance)                        /  (eyeImageDistance - 0.003)
+#                           =   p *     ( (eyeAxialLength - 0.003)  -  (eyeImageDistance - 0.003) )  /  (eyeImageDistance - 0.003)
+#                           =   p *     ( (eyeAxialLength - 0.003)  /  (eyeImageDistance - 0.003)  - 1 )
+#
+# We need to take the absolute value of the expression for q, for the case when b is negative (image point right of retina).
+
+# Based on the above, the following function calculates the blur circle diameter (in metres) for light of wavelength w, with the eye  
+# model in autofocus mode:
+
+blur(objectDistance, w, blurPlaneOffset, eyeAxialLength) =                                                                            \
+                                                                                                                                      \
+max(eyeAiryDiskDiameter(autoFocusLoA(objectDistance, eyeAxialLength, 0.5, 0.5), w),                                                   \
+                                                                                                                                      \
+    1.0 * pupilDiameter * abs( -1 + (blurPlaneOffset + eyeAxialLength - 0.003)    /                                                   \
+     (eyeImageDist(objectDistance, w, autoFocusLoA(objectDistance, eyeAxialLength, 0.5, 0.5)) - 0.003) )                             \
+)
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# A note on calculating the blur circle diameter on the peripheral retina in a myopic schematic eye using the blur() function.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# Uneven eye growth often occurs in myopia, creating an oval-shaped eye that is longer along its optical axis than in other dimensions.
+# As a result, when myopes wear corrective lenses that focus the image on their fovea, at the retinal periphery, there may be hyperopic
+# defocus, meaning the image is focused behind the retina. In order to calculate the blur circle diameter at the retinal periphery of
+# myopes, we have added a special feature to the blur() function, which is as follows. 
+
+# Normally, the blur() function calculates blur circle size by first adjusting the schematic eye lens to focus the image on the  
+# posterior pole of the retina (taking into account lag of accommodation), and then for the specified wavelength, calculating the blur  
+# circle diameter on the posterior pole. In emmetropes, this calculated blur circle diameter is also valid at the retinal periphery, up
+# to an angle of 20° from the optical axis (since the paraxial approximation used in our eye model is valid for angles up to 20°). But
+# the retinal periphery of myopes lie closer to the eye lens than the posterior pole, so when the image is in focus on the posterior
+# pole, the image does not come into focus on the peripheral retina, but behind it. Thus the posterior pole blur circle size
+# calculation is not valid in the retinal periphery of myopes. 
+
+# In order to adapt the blur() function to operate at the retinal periphery of myopes, we introduce a variable blurPlaneOffset to 
+# blur(). Setting blurPlaneOffset to a non-zero distance (in metres) gets this function to calculate the blur circle diameter cast on 
+# a plane shifted from the posterior pole by a distance of blurPlaneOffset, while still focusing the image on the posterior pole.  
+# Positive values of blurPlaneOffset move this plane further from the cornea, and negative values shift the plane closer to the cornea.
+
+# We then use data from real eyes to set blurPlaneOffset to the empirically measured distance between the myopic peripheral retina and 
+# the point behind the peripheral retina where the image comes into focus. This allows us to calculate blur circle size on the 
+# peripheral retina in a myopic schematic eye, as the plane acts as the surface of the peripheral retina. We determine the value of 
+# blurPlaneOffset from empirical data as follows.
+
+# This study: https://doi.org/10.21516/2072-0076-2018-11-4-36-41 examines a cohort of myopes aged 10 to 18 whose degree of myopia was
+# -5.3 D on average. These myopes were found to have relative hyperopic defocus across their peripheral retina. At 15° to the visual 
+# axis (15° retinal eccentricity), the relative hyperopic defocus was 0.52 dioptres on the temple side, and 0.51 dioptres on the nasal 
+# side, an average of 0.52 dioptres. Note that the visual axis terminates at the fovea, and is displaced by around 5° from the optical 
+# axis which terminates at the posterior pole. 
+
+# The level of peripheral hyperopic defocus increases with greater angles of retinal eccentricity, but for the purposes of our model, 
+# we assume that the relative hyperopic defocus at 15° to the visual axis roughly represents the average hyperopic defocus across all
+# peripheral retinal eccentricity angles in the myopic eye where emmetropisation takes place. 
+
+# In our Le Grand model, 0.52 D of hyperopia corresponds to a 0.19 mm shift in image point position. This is calculated using the
+# function eyeImageDistSingleCorLens(objectDistance, powerCor, w, fp), with objectDistance = 1e90, w = standardWavelength, fp = 0 and
+# noting the difference in calculated focal length as powerCor is changed from zero to 0.52 dioptres. Thus if -5.3 D of myopia results
+# in a 0.19 mm shift, -1 D of myopia will result in a 0.036 mm shift of focal point position behind the peripheral retina.
+
+# So when we use our Le Grand model to simulate a myopic eye with an oval shape, and we want to calculate the blur circle size on the 
+# peripheral retina, we set blurPlaneOffset to 0.000036 metres for each dioptre of myopia of the eye. For example, in an eye with -3 D 
+# of myopia, we set blurPlaneOffset to 3 x 0.000036 = 0.000108 metres, in order to calculate the blur circle size on the peripheral   
+# retina. But for calculating the blur circle size on the posterior pole of a myopic eye, blurPlaneOffset should be set to zero. And 
+# for an emmetropic eye, blurPlaneOffset should be set to zero for calculating the blur circle size at both the posterior pole and at 
+# the retinal periphery, because there is no hyperopic defocus in the periphery of emmetropic eyes.
+
+offsetPerDioptre = 0.000036        # Offset of the blur circle plane (in metres) for each dioptre of myopia of the eye 
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# blurCorLens(objectDistance, powerCor1, powerCor2, w, blurPlaneOffset, eyeAxialLength)   
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function calculates the diameter (in metres) of the blur circle created on the schematic retina by a point object.
+
+# This version of the blur function includes up to two corrective lenses placed in contact (as a doublet lens) in front of the  
+# schematic eye, at vertexDistance from the apex of the front surface of the cornea. The dioptre powers of these two corrective lenses 
+# are set by powerCor1 and powerCor2.
+
+blurCorLens(objectDistance, powerCor1, powerCor2, w, blurPlaneOffset, eyeAxialLength) =                                                                \
+                                                                                                                                                       \
+max(eyeAiryDiskDiameter(autoFocusLoACorLens(objectDistance,powerCor1,powerCor2,eyeAxialLength,0.5,0.5), w),                                            \
+                                                                                                                                                       \
+1.0 * pupilDiameter * abs( -1 + (blurPlaneOffset + eyeAxialLength - 0.003)    /                                                                        \
+(eyeImageDistCorLens(objectDistance,powerCor1,powerCor2,w,autoFocusLoACorLens(objectDistance,powerCor1,powerCor2,eyeAxialLength,0.5,0.5)) - 0.003) )   \
+)
+
+
+
+# For convenience of notation, we define three blur circle functions at the blue, green and red cone peak sensitivity wavelengths:
+
+Blue(objectDistance,  powerCor1, powerCor2, blurPlaneOffset, eyeAxialLength) = \
+    blurCorLens(objectDistance, powerCor1, powerCor2, blueConeW,  blurPlaneOffset, eyeAxialLength) + blueBlurCircleAddition
+
+Green(objectDistance, powerCor1, powerCor2, blurPlaneOffset, eyeAxialLength) = \
+    blurCorLens(objectDistance, powerCor1, powerCor2, greenConeW, blurPlaneOffset, eyeAxialLength)
+
+Red(objectDistance,   powerCor1, powerCor2, blurPlaneOffset, eyeAxialLength) = \
+    blurCorLens(objectDistance, powerCor1, powerCor2, redConeW,   blurPlaneOffset, eyeAxialLength)
+
+
+# blueBlurCircleAddition is used to simulate the effect of viewing a video screen image in which the blue RGB channel has been 
+# slightly blurred. Normally blueBlurCircleAddition is set to zero, unless simulating blue channel blur.
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, eyeAxialLength)     
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# This function calculates the visual feedback signal. If the global variable 'formula' is set to 1, the visual feedback signal is  
+# calculated as the difference B-R of blue and red blur circle diameters. 
+
+# This function calculates the visual feedback signal using an autofocus schematic eye. For any values of objectDistance and 
+# eyeAxialLength within normal range, the autofocus eye accommodation mechanism automatically focuses the image onto the schematic 
+# retina, taking into account lag of accommodation, meaning the wavelength it focuses on the retina depends on the degree of 
+# accommodation. Once focus is achieved, the blur circle visual feedback signal is calculated and returned by this function. For 
+# example, in the case of a B-R visual feedback formula, we have: VFSignal() = B-R, which translates to:
+
+# VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, eyeAxialLength) =
+#     blurCorLens(objectDistance, powerCor1, powerCor2, blueConeW,  blurPlaneOffset, eyeAxialLength) - 
+#     blurCorLens(objectDistance, powerCor1, powerCor2, redConeW,   blurPlaneOffset, eyeAxialLength)
+
+# Up to two corrective lenses in contact (as a doublet) can be placed in front of the schematic eye by setting powerCor1 and powerCor2  
+# to the desired dioptric power; if these are set to zero, then this is equivalent to not including any corrective lens.
+
+# Below we define several different versions of VFSignal() to represent different visual feedback signal formulas.
+# Abbreviated function arguments: o = objectDistance, p = powerCor1, q = powerCor2, r = blurPlaneOffset, l = eyeAxialLength.
+
+# The global variable 'formula' selects the visual feedback formula we use, formulas such as B-R, B-(G+R)/2 and (B-R)*(B+R). 
+
+VFSignal(o,p,q,r,l) = (formula == 1)  ?  (Blue(o,p,q,r,l)  - Red(o,p,q,r,l)  ) * 10**6  :                                             \
+                      (formula == 2)  ?  (Blue(o,p,q,r,l)  - Green(o,p,q,r,l)) * 10**6  :                                             \
+                      (formula == 3)  ?  (Green(o,p,q,r,l) - Red(o,p,q,r,l)  ) * 10**6  :                                             \
+                      (formula == 4)  ?  (Blue(o,p,q,r,l)  - (Green(o,p,q,r,l) + Red(o,p,q,r,l))/2) * 10**6  :                        \
+                      (formula == 5)  ?  Blue(o,p,q,r,l)   / Red(o,p,q,r,l)             :                                             \
+                      (formula == 6)  ?  Blue(o,p,q,r,l)   / Green(o,p,q,r,l)           :                                             \
+                      (formula == 7)  ?  Green(o,p,q,r,l)  / Red(o,p,q,r,l)             :                                             \
+                      (formula == 8)  ?  (Blue(o,p,q,r,l)  - Red(o,p,q,r,l)) / (Blue(o,p,q,r,l) + Red(o,p,q,r,l))  :                  \
+                                         (Blue(o,p,q,r,l)  - Red(o,p,q,r,l)) * (Blue(o,p,q,r,l) + Red(o,p,q,r,l)) * 10**12
+                                              
+                                              
+# Set formula = 1 for a B-R visual feedback formula, set formula = 4 for B-(G+R)/2, formula = 5 for B/R, formula = 8 for (B-R)/(B+R),
+# set formula = 9 for a (B-R)*(B+R) formula
+
+
+# The 10**6 multiplier expresses B-R in terms of micrometres rather than metres (whereas the B/R and the (B-R)/(B+R) formulas are 
+# dimensionless). The 10**12 multiplier expresses (B-R)*(B+R) in terms of micrometres squared.
+
+
+# The formulaString text strings below are displayed in the graph y axis label.
+
+if(formula==1) formulaString = "B−R (μm)"   
+if(formula==2) formulaString = "B−G (μm)"
+if(formula==3) formulaString = "G−R (μm)"
+if(formula==4) formulaString = "B-(G+R)/2 (μm)"
+if(formula==5) formulaString = "B/R"
+if(formula==6) formulaString = "B/G"
+if(formula==7) formulaString = "G/R"
+if(formula==8) formulaString = "(B−R)/(B+R)"
+if(formula==9) formulaString = "(B−R)×(B+R) (μm^2)"
+
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# GRAPH SPECIFICATIONS
+# The following graph specifications plot the graphs used in the figures of the study. These graphs demonstrate the main results of the 
+# longitudinal chromatic aberration visual feedback model of near work-induced myopia.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 1: VISUAL FEEDBACK SIGNAL VERSUS EYE AXIAL LENGTH
+# This graph plots the visual feedback signal versus the eye axial length (in mm), with the eye model crystalline lens in autofocus 
+# mode (meaning fp is automatically adjusted to focus the image on the retina). Thus, as the eye axial length is varied on the   
+# horizontal axis of this graph, the schematic eye adapts analogously to the way that real eyes respond to different object distances,      
+# changing both its dioptric lens power as well as the wavelength in focus in order to accommodate the object stimulus. Once the eye 
+# focuses, the visual feedback signal is calculated and is shown on the vertical axis of the graph.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==1) {
+
+blurPlaneOffset = 0
+
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set xlabel "Eye Axial Length (mm)"    offset 0, 0.2
+set ylabel "Visual Feedback Signal ".formulaString offset 1, 0
+
+set xrange [21   :   28]; set xtics nomirror 1; set mxtics 10  # Axial length (in mm - must be converted to metres before use: x/1000)
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+set yrange [-50*S: 50*S]; set ytics nomirror 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3
+
+if(formula>=5) { set yrange [-2*S:5*S];       set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];         set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+ 
+
+# Plot the graph for the Ivanoff individual specified by the 'person' variable
+if(person >= 1) { 
+
+set title (powerCor1 == 0 && powerCor2 == 0) ? \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor person %i", person) : \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor person %i. Corrective lens: %.2f D", person, powerCor1 + powerCor2) 
+
+set key top left        # Key position in graph
+set key width -2        # By reducing key width we move the key item line snippets closer to the key item text
+set key offset 2, 0     # Moves key items 2 character widths to right
+set key Left            # The word Left with a capital letter sets the text justification of the key
+
+set key title "Object Distance" offset -2, 0
+
+set arrow from emmetropicAxialLength(0) * 1000,graph 0 to emmetropicAxialLength(0) * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at emmetropicAxialLength(0) * 1000, graph 0.05 "Person ".person." Has Emmetropic Axial Length = ".sprintf("%.2f mm", 1000 * emmetropicAxialLength(0)) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black' 
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label;set key title ""
+
+set key height 3;   plot VFSignal(1e90, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Infinity" lc rgb "#CCCCCC" dashtype 2 lw 1.5 
+set key height 5;   plot VFSignal(0.6,  powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "0.6 m   " lc rgb lineColour(0) lw 1.5
+set key height 7;   plot VFSignal(0.3,  powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "0.3 m   " lc rgb "#CCCCCC" dashtype 4 lw 1.5
+
+}
+
+
+
+# Plot graph for all 10 people from Ivanoff data
+if(person == -1) { 
+
+set title (powerCor1 == 0 && powerCor2 == 0) ? \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor all 10 persons. Object distance is %s.", objectDistanceString) : \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor all 10 persons. Object distance is %s. Corrective lens: %.2f D", objectDistanceString, powerCor1 + powerCor2)
+
+set key bottom right    # Key position in graph
+set key width -2        # By reducing key width we move the key item line snippets closer to the key item text
+set key offset -1, 0    # Moves key items 1 character width to left
+set key Left            # The word Left with a capital letter controls the text justification of the key
+
+set arrow from meanEmmetropicAxialLength * 1000,graph 0 to meanEmmetropicAxialLength * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at meanEmmetropicAxialLength * 1000,graph 0.09 "Mean Emmetropic Axial Length\nfor Ten Subjects = ".sprintf("%.2f mm", 1000 * meanEmmetropicAxialLength) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black' 
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+keyHeight = 22 # Controls text position within graph legend/key
+
+# Loop through all 10 individuals in the Ivanoff graph:
+do for [person = 1:10] { keyHeight = keyHeight-2; set key height keyHeight;  
+plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title sprintf("Person %2i", person) lc rgb lineColour(0) lw 1.5 }  
+
+}
+
+
+
+# Plot the graph just for the Ivanoff subjects 3, 5, 6, 7 and 8 who all have normal lag of accommodation 
+if(person == -2) { 
+
+set title (powerCor1 == 0 && powerCor2 == 0) ? \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor persons 3, 5, 6, 7 and 8. Object distance is %s.", objectDistanceString) : \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor persons 3, 5, 6, 7 and 8. Object distance is %s. Corrective lens: %.2f D", objectDistanceString, powerCor1 + powerCor2)
+
+set arrow from meanEmmetropicAxialLength * 1000,graph 0 to meanEmmetropicAxialLength * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at meanEmmetropicAxialLength * 1000,graph 0.05 "Mean Emmetropic Axial Length for Ten Subjects = ".sprintf("%.2f mm", 1000 * meanEmmetropicAxialLength) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black' 
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+set key top left        # Key position in graph
+set key width -2        # By reducing key width we move the key item line snippets closer to the key item text
+set key offset 2, 0     # Moves key items 2 character widths to right
+set key Left            # The word Left with a capital letter sets the text justification of the key
+
+# Plot the graph for individuals 3, 5, 6, 7 and 8 in the Ivanoff data who all have normal lag of accommodation:
+person = 3;  set key height 0;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person 3" lc rgb lineColour(0) lw 1.5
+person = 5;  set key height 2;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person 5" lc rgb lineColour(0) lw 1.5
+person = 6;  set key height 4;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person 6" lc rgb lineColour(0) lw 1.5
+person = 7;  set key height 6;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person 7" lc rgb lineColour(0) lw 1.5
+person = 8;  set key height 8;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person 8" lc rgb lineColour(0) lw 1.5
+
+}
+
+
+
+# Plot the graph just for the Ivanoff subjects 1, 2, 4, 9 and 10 who all have high lag of accommodation 
+if(person == -3) { 
+
+set title (powerCor1 == 0 && powerCor2 == 0) ? \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor persons 1, 2, 4, 9 and 10. Object distance is %s.", objectDistanceString) : \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor persons 1, 2, 4, 9 and 10. Object distance is %s. Corrective lens: %.2f D", objectDistanceString, powerCor1 + powerCor2)
+
+set arrow from meanEmmetropicAxialLength * 1000,graph 0 to meanEmmetropicAxialLength * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at meanEmmetropicAxialLength * 1000,graph 0.05 "Mean Emmetropic Axial Length for Ten Subjects = ".sprintf("%.2f mm", 1000 * meanEmmetropicAxialLength) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black' 
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+set key top left        # Key position in graph
+set key width -2        # By reducing key width we move the key item line snippets closer to the key item text
+set key offset 2, 0     # Moves key items 2 character widths to right
+set key Left            # The word Left with a capital letter controls the text justification of the key
+
+# Plot the graph for individuals 1, 2, 4, 9 and 10 in the Ivanoff data who all have high lag of accommodation:
+person = 1;  set key height 0;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person  1" lc rgb lineColour(0) lw 1.5
+person = 2;  set key height 2;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person  2" lc rgb lineColour(0) lw 1.5
+person = 4;  set key height 4;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person  4" lc rgb lineColour(0) lw 1.5
+person = 9;  set key height 6;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person  9" lc rgb lineColour(0) lw 1.5
+person = 10; set key height 8;  plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "Person 10" lc rgb lineColour(0) lw 1.5
+
+}
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 2: BLUR CIRCLE SIZE VERSUS EYE AXIAL LENGTH
+# The graph plots the diameter of the blur circles (in mm) cast on the retina by light of the blue, green and red cone peak sensitivity 
+# wavelengths as the eye axial length is varied. As the axial length varies, the eye is autofocused, taking into account lag of
+# accommodation. The lag of accommodation characteristics depend on which Ivanoff subject is selected (by setting person = 1 to 10).
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==2) {
+blurPlaneOffset = 0
+
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set title sprintf("Blur Circle Diameter vs Eye Axial Length\nFor person %i.  Object distance is %s.", person, objectDistanceString)  
+set xlabel "Eye Axial Length (mm)"     offset 0, 0.2
+set ylabel "Blur Circle Diameter (mm)" offset 1, 0
+
+set xrange [21    :   28]; set xtics nomirror 1; set mxtics 10   # Eye axial length (mm)
+set yrange [-0.07 : 0.15]; set ytics nomirror 0.01               # Blur circle size (mm)
+
+
+set arrow from emmetropicAxialLength(0) * 1000,graph 0 to emmetropicAxialLength(0) * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at emmetropicAxialLength(0) * 1000, graph 0.05 "Person ".person." Has Emmetropic Axial Length = ".sprintf("%.2f mm", 1000 * emmetropicAxialLength(0)) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black' 
+
+
+plot \
+blur(objectDistance, redConeW, blurPlaneOffset,   x/1000.0) * 1000 title "Red blur circle diameter R"   lc rgb "red"   lw 1.5, \
+blur(objectDistance, greenConeW, blurPlaneOffset, x/1000.0) * 1000 title "Green blur circle diameter G" lc rgb "green" lw 1.5, \
+blur(objectDistance, blueConeW, blurPlaneOffset,  x/1000.0) * 1000 title "Blue blur circle diameter B"  lc rgb "blue"  lw 1.5, \
+blur(objectDistance, blueConeW, blurPlaneOffset,  x/1000.0) * 1000 - blur(objectDistance, redConeW, blurPlaneOffset, x/1000.0) * 1000 title "Value of B−R" lc rgb lineColour(0) lw 1.5 dashtype 3, \
+0.1 * autoFocusLoA(objectDistance, x/1000.0, 0.5, 0.5) title "Focusing parameter (fp / 10)"  lc rgb "purple"  lw 1.5 dashtype 3
+
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 3: VISUAL FEEDBACK SIGNAL VERSUS OBJECT DISTANCE — DEMONSTRATING THE NEAR-WORK EFFECT
+# This graph plots the visual feedback signal versus the object distance (in metres), with the eye crystalline lens in autofocus mode 
+# (fp automatically adjusted to focus the image), and lag of accommodation taken into account when autofocusing. This graph illustrates  
+# how near work may create a negative visual feedback signal that causes eye axial elongation, leading to myopia.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==3) {
+
+blurPlaneOffset = 0 
+
+set title  "Visual Feedback Signal vs Object Distance in Autofocus Eye Model\nFor 10 persons"
+set xlabel "Object Distance (Metres)" offset 0, 0.2 
+set ylabel "Visual Feedback Signal ".formulaString offset 1, 0
+
+set xrange [0.2 : 6]; set xtics nomirror 1; set mxtics 10     # Object Distance in Metres
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+if(blueBlurCircleAddition > 0) { S = S * 1.5 }  # Increase yrange if we are using blueBlurCircleAddition
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-50*S:50*S]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2*S:5*S];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];     set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+
+set key bottom right    # Key position in graph
+set key width -2        # By reducing key width we move the key item line snippets closer to the key item text
+set key offset -1, 0    # Moves key items 1 character width to left
+set key Left            # The word Left with a capital letter controls the text justification of the key
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+keyHeight = 22 # Controls text position within graph legend/key
+
+# Loop through all 10 individuals in the Ivanoff graph:
+do for [person = 1:10]  {  
+keyHeight = keyHeight-2; set key height keyHeight
+plot VFSignal(x, powerCor1, powerCor2, blurPlaneOffset, emmetropicAxialLength(0)) title sprintf("Person %2i", person) lc rgb lineColour(0) lw 1.5
+}
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 4: VISUAL FEEDBACK SIGNAL VERSUS DEGREE OF MYOPIA — EFFECT OF A CORRECTIVE LENS ON THE POSTERIOR POLE AND PERIPHERAL SIGNALS
+# This graph plots the visual feedback signal versus the degree of axial myopia (in dioptres) in the schematic eye, with the object set  
+# at a fixed distance, and the eye axial length varied to match the degree of myopia. When used, the corrective lens placed in front    
+# of the schematic eye fully corrects for the myopia.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==4) {
+
+set title sprintf("Posterior Pole Visual Feedback Signal vs Degree of Myopia in Autofocus Eye Model\nFor person %i", person) 
+set xlabel "Degree of Myopia (Dioptres)" offset 0, 0.2
+set ylabel "Posterior Pole Visual Feedback Signal ".formulaString offset 1, 0
+
+
+if(peripheral==1) {
+set title sprintf("Peripheral Visual Feedback Signal vs Degree of Myopia in Autofocus Eye Model\nFor person %i", person) 
+set xlabel "Degree of Myopia (Dioptres)" offset 0, 0.2
+set ylabel "Peripheral Visual Feedback Signal ".formulaString offset 1, 0
+}
+
+set xrange [-8  :  0]; set xtics nomirror 2     # Degree of myopia in dioptres
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-50*S:50*S]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2*S:5*S];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];     set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+
+# set yzeroaxis lc rgb "grey50"
+
+set key bottom right
+
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+
+# These dummy plots are just to create the graph legend
+set key height 2; plot 999999 title "Myopic eye with corrective lens" lc rgb lineColour(0) dashtype 2
+set key height 4; plot 999999 title "Uncorrected myopic eye" lc rgb lineColour(0)
+
+
+# Myopic eye which is uncorrected (no ophthalmic corrective lens) 
+plot VFSignal(0.3,  0, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "  0.3m" at end lc rgb lineColour(0) lw 1.5
+plot VFSignal(0.6,  0, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "  0.6m" at end lc rgb lineColour(0) lw 1.5
+plot VFSignal(1e90, 0, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "  Inf"  at end lc rgb lineColour(0) lw 1.5
+
+
+# Myopic eye with ophthalmic lens to fully correct the myopia 
+plot VFSignal(0.3,  x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "  0.3m" at end lc rgb lineColour(0) dashtype 2 lw 1.5
+plot VFSignal(0.6,  x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "  0.6m" at end lc rgb lineColour(0) dashtype 2 lw 1.5
+plot VFSignal(1e90, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "  Inf"  at end lc rgb lineColour(0) dashtype 2 lw 1.5
+
+# A note on the offset plane used for calculating peripheral visual feedback signals:
+# The offset of the plane on which blur circles are calculated is set to offsetPerDioptre * x . This is because for every -1 dioptres 
+# of myopia, the focal point in the periphery moves about offsetPerDioptre = 0.036 mm = 0.000036 metres beyond the retina on average
+# (hyperopic defocus). See the section "A note on calculating the blur circle diameter on the peripheral retina". 
+# If the variable 'peripheral' is set to zero, then the blur plane offset becomes zero (disables the offset plane). The offset plane is 
+# disabled for hyperopia in this graph (via the min() function).
+
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 5: VISUAL FEEDBACK SIGNAL VERSUS OBJECT DISTANCE — THE NEAR-WORK EFFECT IN THE RETINAL PERIPHERY OF MYOPES
+# This graph plots the visual feedback signal versus the object distance (in metres) with the eye crystalline lens in autofocus mode  
+# (fp automatically adjusts to focus the image), and lag of accommodation taken into account when autofocusing. 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==5) {
+
+blurPlaneOffset = offsetPerDioptre * (powerCor1 + powerCor2) 
+
+# The offset of the plane on which blur circles are calculated is set to offsetPerDioptre * (powerCor1 + powerCor2). This is because  
+# for every -1 dioptres of myopia, the focal point in the periphery moves about offsetPerDioptre = 0.036 mm = 0.000036 metres beyond
+# the retina on average (hyperopic defocus). See section "A note on calculating the blur circle diameter on the peripheral retina".
+
+set title  sprintf("Peripheral Visual Feedback Signal vs Object Distance in Autofocus Eye Model\nFor all ten Ivanoff subjects with %.2f D of myopia", powerCor1 + powerCor2) 
+set xlabel "Object Distance (Metres)" offset 0, 0.2 
+set ylabel "Peripheral Visual Feedback Signal ".formulaString offset 1, 0
+
+set xrange [0.2 : 6]; set xtics nomirror 1; set mxtics 10 # Object Distance in Metres
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-50*S:50*S]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2*S:5*S];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];     set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+
+set key bottom right    # Key position in graph
+set key width -2        # By reducing key width we move the key item line snippets closer to the key item text
+set key offset -1, 0    # Moves key items 1 character width to left
+set key Left            # The word Left with a capital letter controls the text justification of the key
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+keyHeight = 22 # Controls text position within graph legend/key
+
+# Loop through all 10 individuals in the Ivanoff graph:
+do for [person = 1:10]  {  
+keyHeight = keyHeight-2; set key height keyHeight
+plot VFSignal(x, powerCor1, powerCor2, blurPlaneOffset, ametropicAxialLength(powerCor1, powerCor2)) title sprintf("Person %2i", person) lc rgb lineColour(0) lw 1.5
+}
+
+# Note that the function ametropicAxialLength(powerCor1, powerCor2) calculates the eye axial length which corresponds to the dioptre
+# degree of myopia or hyperopia specified by powerCor1 (and powerCor2 if two lenses are placed before the eye).
+
+ 
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 6: VISUAL FEEDBACK SIGNAL VERSUS DEGREE OF MYOPIA — THE EFFECT OF A BIFOCAL LENS ON THE VISUAL FEEDBACK SIGNAL
+# This graph plots the visual feedback signal versus the degree of axial myopia (in dioptres), with the object set at a fixed distance,    
+# and the schematic eye axial length adjusted to match the degree of myopia implied by the power of the bifocal distance segment   
+# corrective lens placed in front of the eye. The graph shows the visual feedback signal for both the upper distance segment and the   
+# lower reading segment of the bifocal lens. Depending on how the flag 'peripheral' is set, it produces a graph of either the posterior  
+# pole or the peripheral visual feedback signal.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==6) {
+
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+readingAddition = 2      # Reading addition in dioptres added to bifocal lens
+
+set title sprintf("Posterior Pole Visual Feedback Signal vs Degree of Myopia in Autofocus Eye Model\nFor person %i. Object distance is %s.", person, objectDistanceString)
+set xlabel "Degree of Myopia (Dioptres)" offset 0, 0.2
+set ylabel "Posterior Pole Visual Feedback Signal ".formulaString offset 1, 0
+
+
+
+if(peripheral==1) {
+set title sprintf("Peripheral Visual Feedback Signal vs Degree of Myopia in Autofocus Eye Model\nFor person %i. Object distance is %s.", person, objectDistanceString) 
+set xlabel "Degree of Myopia (Dioptres)" offset 0, 0.2
+set ylabel "Peripheral Visual Feedback Signal ".formulaString offset 1, 0
+}
+
+set xrange [-8  :  0]; set xtics nomirror 2     # Degree of myopia in dioptres
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-50*S:50*S]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2*S:5*S];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];     set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+
+set yzeroaxis lc rgb "grey50"
+
+
+set key top right  
+
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+
+# No bifocals, full myopic correction 
+set key height 2; plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Myopic eye with corrective bifocal distance lens" lc rgb lineColour(0) lw 1.5
+
+# With bifocal reading lens of +2 diopter ADD (this reading lens subtracts 2 dioptres from the full myopic prescription)
+set key height 4; plot VFSignal(objectDistance, x + readingAddition, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Myopic eye with bifocal reading lens" lc rgb lineColour(0) dashtype 2 lw 1.5
+
+
+# A note on the offset plane used for calculating peripheral visual feedback signals:
+# The offset of the plane on which blur circles are calculated is set to offsetPerDioptre * x . This is because for every -1 dioptres 
+# of myopia, the focal point in the periphery moves about offsetPerDioptre = 0.036 mm = 0.000036 metres beyond the retina on average
+# (hyperopic defocus). See the section "A note on calculating the blur circle diameter on the peripheral retina". 
+# If the variable 'peripheral' is set to zero, then the blur plane offset becomes zero (disables the offset plane). The offset plane is 
+# disabled for hyperopia in this graph (via the min() function).
+
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# GRAPH 7: VISUAL FEEDBACK SIGNAL VERSUS EYE AXIAL LENGTH — EFFECT OF PUPIL SIZE ON THE VISUAL FEEDBACK SIGNAL
+# This graph plots the visual feedback signal versus the eye axial length (in mm) in the same way as graph 1, but with three different 
+# pupil diameters.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==7) {
+
+blurPlaneOffset = 0
+
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set xlabel "Eye Axial Length (mm)"    offset 0, 0.2
+set ylabel "Visual Feedback Signal ".formulaString    offset 1, 0
+
+set xrange [21  : 28]; set xtics nomirror 1; set mxtics 10  # Axial length (in mm - must be converted to metres before use: x/1000)
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-50*S:50*S]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2*S:5*S];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];     set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+
+ 
+# Plot the graph for the Ivanoff individual specified by the 'person' variable
+if(person>=1) { 
+
+set title (powerCor1 == 0 && powerCor2 == 0) ? \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor person %i.  Object distance is %s.", person, objectDistanceString) : \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor person %i. Corrective lens: %.2f D. Object distance is %s.", person, powerCor1 + powerCor2, objectDistanceString) 
+
+set key top left title "Pupil Diameter "
+ 
+set arrow from emmetropicAxialLength(0) * 1000,graph 0 to emmetropicAxialLength(0) * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at emmetropicAxialLength(0) * 1000, graph 0.05 "Person ".person." Has Emmetropic Axial Length = ".sprintf("%.2f mm", 1000 * emmetropicAxialLength(0)) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black' 
+
+
+set multiplot; plot 999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label;set key title ""
+
+pupilDiameter = 0.004; set key height 3; plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "  4 mm" lc rgb "gray"  dashtype 2 lw 1.5
+
+pupilDiameter = 0.003; set key height 5; plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "  3 mm" lc rgb lineColour(0) lw 1.5
+
+pupilDiameter = 0.002; set key height 7; plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "  2 mm" lc rgb "gray"  dashtype 4 lw 1.5
+
+}
+
+} # End if
+
+
+
+
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# TESTING AND DEBUGGING  
+# The following graph specifications are for testing and debugging purposes.
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# REFRACTIVE INDEX OF THE EYE'S OPTICAL MEDIA VERSUS WAVELENGTH (nm)
+# This graph plots the refractive index of: the cornea, aqueous humour, crystalline lens, and vitreous humour optical media in the
+# Le Grand Full Theoretical Eye model against wavelength. Used to visually examine the dispersion formulas for these optical media.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==20) {
+set title  "Refractive Index vs Wavelength\nFor optical media in the Le Grand Full Theoretical Eye model"
+set xlabel "Wavelength (nm)"  offset 0, 0.2  
+set ylabel "Refractive Index" offset 1, 0
+
+set xrange [300 : 800]; set xtics 100; set mxtics 5        # Wavelength (nm)
+set yrange [1.3 : 1.5]; set ytics 0.1; set mytics 0        # Refractive index
+
+set rmargin 11                                             # Use larger right margin to fit in graph key labels
+
+plot corneaN(x) title " Cornea" at end, aqueousN(x) title "Aqueous " at beginning, crystallineNin(x) title " Crys Inf" at end, crystallineNnp(x) title " Crys Near" at end, vitreousN(x) title " Vitreous" at end
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# REFRACTIVE INDEX VERSUS WAVELENGTH (nm) 
+# This graph plots the refractive index of different ophthalmic lens materials versus wavelength. This graph can be used to visually
+# examine the dispersion formulas for these materials.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==21) {
+set title  "Refractive Index of Lens Material vs Wavelength"
+set xlabel "Wavelength (nm)"  offset 0, 0.2  
+set ylabel "Refractive Index" offset 1, 0
+
+set xrange [400  : 1000]; set xtics 100        # Wavelength (nm)
+set yrange [1.46 : 1.71]; set ytics 0.1        # Refractive index
+
+set rmargin 14                                 # Use larger right margin to fit in graph key labels
+
+plot \
+refractiveIndexHighIndex167(x)  title " High-Index167" at end lc rgb "gold"     lw 1.5, \
+refractiveIndexPolycarbonate(x) title " Polycarbonate" at end lc rgb "red"      lw 1.5, \
+refractiveIndexTrivex(x)        title " Trivex"        at end lc rgb "web-blue" lw 1.5, \
+refractiveIndexCrownGlassBK7(x) title " BK7"           at end lc rgb "#00CC00"  lw 1.5, \
+refractiveIndexCR39(x)          title " CR39"          at end lc rgb "cyan"     lw 1.5, \
+refractiveIndexPMMA(x)          title " PMMA"          at end lc rgb "magenta"  lw 1.5
+
+
+} # End if
+ 
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WAVELENGTH IN FOCUS (nm) VERSUS ACCOMMODATION (fp)
+# This graph is for testing the focusWavelength(fp) function which, for a given degree of eye accommodation (determined by the focusing 
+# parameter fp), calculates the wavelength the eye model will focus on the retina. The function focusWavelength(fp) captures the 
+# empirically measured lag of accommodation characteristics of the 10 Ivanoff subjects into 10 equations. The specific lag of 
+# accommodation values the focusWavelength(fp) function returns depend on which Ivanoff subject is selected (the subject is selected by 
+# setting the global variable 'person' from 1 to 10). In this graph we plot focusWavelength(fp) for all 10 Ivanoff subjects.
+# This graph illustrates the lag of accommodation characteristics of the Ivanoff subjects.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==22) {
+set title  "Wavelength in Focus vs Accommodation\nFor the 10 individual persons in the Ivanoff graph" 
+set xlabel "Infinity \t\t\t\t\t\t\t\t\t      Accommodation (fp)      \t\t\t\t\t\t\t\t\t Near point" offset 0, 0.2  
+set ylabel "Focus Wavelength (nm)" offset 1, 0
+
+set xrange [0   :   1]; set xtics 0.1; set mxtics 5        # Accommodation (fp)
+set yrange [200 : 760]; set ytics 100; set mytics 5        # Wavelength (nm)
+
+
+# These are data points for person 1 in the Ivanoff lag of accommodation graph, page 46 of book "Form and Space Vision", Yves Le Grand
+person = 1
+set label at 0.0000, 726  " 726 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.0517, 644  " 644 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.1159, 597  " 597 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.1789, 560  " 560 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)   
+set label at 0.2383, 528  " 528 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.2873, 495  " 495 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+
+
+# These are data points for person 2 in the Ivanoff lag of accommodation graph
+person = 2
+set label at 0.0000, 716  " 716 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.0435, 627  " 627 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.0803, 557  " 557 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.1019, 495  " 495 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)   
+set label at 0.1298, 452  " 452 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.1873, 432  " 432 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+
+
+# These are data points for person 4 in the Ivanoff lag of accommodation graph
+person = 4
+set label at 0.0000, 697  " 697 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.0249, 594  " 594 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.0695, 538  " 538 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.1298, 506  " 506 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)   
+set label at 0.1830, 476  " 476 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.2346, 451  " 451 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+
+keyHeight = 0
+
+# Loop through all 10 individuals in the Ivanoff graph:
+do for [person = 1:10] {   
+keyHeight = keyHeight+2; set key height keyHeight
+plot focusWavelength(x) title sprintf("Person %2d", person) lc rgb lineColour(0) lw 1.5  }
+
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WAVELENGTH IN FOCUS (nm) VERSUS ACCOMMODATIVE DEMAND (dioptres)  
+# For a given accommodative demand in dioptres presented to the eye model, this graph shows the wavelength the eye model will focus 
+# on the retina, for each of the 10 Ivanoff subjects. This graph illustrates the lag of accommodation characteristics of the subjects.
+# Note that accommodative demand = 1 / (object distance in metres).
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==23) {
+set title  "Wavelength in Focus vs Accommodative Demand For 10 Ivanoff Subjects"  
+set xlabel "Accommodative Demand (Dioptres)" offset 0, 0.2
+set ylabel "Focus Wavelength (nm)" offset 1, 0
+
+set xrange [0   :   4]; set xtics 0.5;  set mxtics 1    # Object power in dioptres  
+set yrange [400 : 750]; set ytics 100;  set mytics 5    # Wavelength (nm)
+
+
+# These are data points for person 1 in the Ivanoff lag of accommodation graph, page 46 of book "Form and Space Vision", Yves Le Grand
+person = 1
+set label at 0.0, 726  " 726 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.5, 644  " 644 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 1.0, 597  " 597 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 1.5, 560  " 560 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)   
+set label at 2.0, 528  " 528 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 2.5, 495  " 495 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+
+# These are data points for person 2 in the Ivanoff lag of accommodation graph
+person = 2
+set label at 0.0, 716  " 716 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.5, 627  " 627 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 1.0, 557  " 557 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 1.5, 495  " 495 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)   
+set label at 2.0, 452  " 452 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 2.5, 432  " 432 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+
+
+# These are data points for person 4 in the Ivanoff lag of accommodation graph
+person = 4
+set label at 0.0, 697  " 697 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 0.5, 594  " 594 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 1.0, 538  " 538 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 1.5, 506  " 506 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)   
+set label at 2.0, 476  " 476 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+set label at 2.5, 451  " 451 nm" font ',10' textcolor 'gray' point pointtype 5 pointsize 1 lc rgb lineColour(0)  
+
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+keyHeight = 0
+
+# Loop through all 10 individuals in the Ivanoff graph:
+do for [person = 1:10] { 
+keyHeight = keyHeight+2; set key height keyHeight
+plot focusWavelength(autoFocusLoA(1.0/x, emmetropicAxialLength(0), 0.5, 0.5)) title " Person ".person lc rgb lineColour(0) lw 1.5 
+}
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# WAVELENGTH IN FOCUS (nm) VERSUS OBJECT DISTANCE (metres)
+# This graph shows the wavelength our eye model will focus on the retina for different object distances, for each of the 10 Ivanoff  
+# subjects. The graph illustrates the lag of accommodation characteristics of the Ivanoff subjects.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==24) {
+set title  "Wavelength in Focus vs Object Distance"
+set xlabel "Object Distance (metres)" offset 0, 0.2  
+set ylabel "Focus Wavelength (nm)"    offset 1, 0
+
+set xrange [0.2 :   6]; set xtics 1;   set mxtics 2        # Object distance (metres)
+set yrange [300 : 750]; set ytics 100; set mytics 5        # Wavelength (nm)
+
+#plot focusWavelength(autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5))  notitle lw 1.5
+
+
+set key bottom right
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+
+keyHeight = 22 # Controls text position within graph legend/key
+
+# Loop through all 10 individuals in the Ivanoff graph:
+do for [person = 1:10] { 
+keyHeight = keyHeight-2; set key height keyHeight
+plot focusWavelength(autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5)) title " Person ".person lc rgb lineColour(0) lw 1.5
+}
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EYE ACCOMMODATION (fp) VERSUS OBJECT DISTANCE (m)
+# This graph is to test the autoFocus() and autoFocusLoA() functions.
+
+# The autoFocus() function does not take into account lag of accommodation, meaning it does not make use of focusWavelength(fp). In  
+# this graph, autoFocus() calculates the value of fp required to focus light of the relaxed wavelength onto the retina as the object
+# distance is varied. The relaxed wavelength = the Ivanoff subject's wavelength in focus when they look at infinity (this relaxed 
+# wavelength is in the red part of the spectrum, but is slightly different for each Ivanoff subject).
+
+# By contrast the autoFocusLoA() function takes lag of accommodation into account, and employs the function focusWavelength(fp). For a 
+# given object distance, autoFocusLoA() calculates the value of fp such that the eye model focuses light of a wavelength given by 
+# focusWavelength(fp) onto the retina. 
+
+# We find that the autoFocusLoA() curve minimises the variation of fp as the object distance varies, compared to the autoFocus() curve.
+# Minimising the variation of fp is what Yves Le Grand termed the principle of least effort of accommodation (now called the lag of 
+# accommodation).
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==25) {
+set title  "Eye Accommodation vs Object Distance\nFor person ".person
+set xlabel "Object Distance (metres)" offset 0, 0.2 
+set ylabel "Infinity                                     Accommodation (fp)                             Near point" offset 1, 0
+  
+set xrange [0 :  5]; set xtics 1; set mxtics 10       # Object distance (metres)
+set yrange [0 :  1]; set ytics 0.1                    # Accommodation (fp)
+
+
+plot \
+autoFocus(x, relaxedWavelength(0), emmetropicAxialLength(0), 0.5, 0.5) title sprintf("Fixed Wavelength Focusing (at %i nm)", relaxedWavelength(0))  lc rgb "red" , \
+autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5) title "Focusing With Lag of Accommodation"  lc rgb "blue" lw 1.5
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EYE IMAGE DISTANCE (mm) VERSUS ACCOMMODATION (fp) — AT A FIXED WAVELENGTH
+# This graph plots the image distance (as measured from the apex of the front surface of the cornea) at a fixed wavelength of 
+# 587.56 nm, the standardWavelength, as the eye accommodative state fp varies from 0 to 1, with the object fixed at infinity. There is 
+# no lag of accommodation here, as the wavelength is fixed. 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==26) {
+objectDistance = 1e90  # Object distance in metres
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set title sprintf("Eye Image Distance vs Accommodation\nObject distance is %s.", objectDistanceString)   
+set xlabel "Infinity \t\t\t\t\t\t\t\t\t      Accommodation (fp)      \t\t\t\t\t\t\t\t\t Near point" offset 0, 0.2  
+set ylabel "Image Distance (mm)" offset 1, 0
+
+
+set xrange [0  :  1]; set xtics 0.5      # Eye accommodative state (fp)
+set yrange [21 : 25]; set ytics 1        # Image distance (mm)
+
+plot 1000 * eyeImageDist(1e90, 587.56, x) notitle lw 1.5
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EYE IMAGE DISTANCE (mm) VERSUS ACCOMMODATION (fp) — WITH LAG OF ACCOMMODATION TAKEN INTO ACCOUNT
+# This graph plots the image distance (as measured from the apex of the front surface of the cornea) as the eye accommodative state fp 
+# varies from 0 to 1, with the object fixed at infinity. This graph takes into account lag of accommodation, so the actual wavelength 
+# focused on the retina becomes shorter (bluer) as the accommodation fp increases. The lag of accommodation characteristics depend on 
+# which Ivanoff subject is selected by setting the global variable 'person' from 1 to 10.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==27) {
+objectDistance = 1e90  # Object distance in metres
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set title sprintf("Eye Image Distance vs Accommodation\nObject distance is %s.", objectDistanceString)   
+set xlabel "Infinity \t\t\t\t\t\t\t\t\t      Accommodation (fp)      \t\t\t\t\t\t\t\t\t Near point" offset 0, 0.2  
+set ylabel "Image Distance (mm)" offset 1, 0
+
+
+set xrange [0  :  1]; set xtics 0.5      # Eye accommodative state (fp)
+set yrange [21 : 25]; set ytics 1        # Image distance (mm)
+
+plot 1000 * eyeImageDist(1e90, focusWavelength(x), x) title " Person ".person lc rgb lineColour(0) lw 1.5
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EYE IMAGE DISTANCE (mm) VERSUS WAVELENGTH (nm)
+# In this graph the eye model crystalline lens power is kept constant, with the eye in the relaxed state (fp = 0). The graph plots the 
+# eye image distance (as measured from the apex of the front surface of the cornea) as the light wavelength is varied. There is no lag  
+# of accommodation here, as the crystalline lens power is fixed. 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==28) {
+objectDistance = 1e90     # Object distance in metres
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set title sprintf("Eye Image Distance vs Wavelength (Fixed Relaxed Accommodation)\nObject distance is %s.", objectDistanceString)  
+set xlabel "Wavelength (nm)"     offset 0, 0.2 
+set ylabel "Image Distance (mm)" offset 1, 0
+
+set xrange [300 : 800]; set xtics 100    # Wavelength range (nanometres)
+set yrange [22.5 : 25]; set ytics 0.5    # Image distance (mm)
+
+fp = 0
+
+plot 1000 * eyeImageDist(objectDistance, x, fp) notitle lw 1.5  
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EYE IMAGE DISTANCE (mm) VERSUS OBJECT DISTANCE (metres) 
+# This graph plots the eye image distance at a fixed wavelength of 587.56 nm, the standardWavelength, as the object distance is varied,
+# for both a relaxed eye (fp = 0) and a fully accommodated eye (fp = 1). There is no lag of accommodation here, as the eye lens 
+# power is fixed. 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==29) {
+set title  "Eye Image Distance vs Object Distance" 
+set xlabel "Object Distance (metres)" offset 0, 0.2
+set ylabel "Image Distance (mm)"      offset 1, 0
+
+set xrange [0.2  :    5]; set xtics 0.5  # Object distance (metres)
+set yrange [21.5 : 26.5]; set ytics 0.5  # Image distance (mm)
+
+plot  \
+1000 * eyeImageDist(x, 587.56, 0 ) title "Relaxed accommodation" lc rgb "black" lw 1.5, \
+1000 * eyeImageDist(x, 587.56, 1 ) title "Fully accommodated"    lc rgb "brown" lw 1.5
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# EYE IMAGE DISTANCE (mm) VERSUS OBJECT DISTANCE (metres) — WITH AN AUTOFOCUS EYE AND LAG OF ACCOMMODATION TAKEN INTO ACCOUNT
+# This graph plots the eye image distance when the eye is autofocusing and taking lag of accommodation into account, as the object 
+# distance is varied.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==30) {
+set title  "Eye Image Distance vs Object Distance" 
+set xlabel "Object Distance (metres)" offset 0, 0.2
+set ylabel "Image Distance (mm)"      offset 1, 0
+
+set xrange [0.1  :    5]; set xtics 0.5  # Object distance (metres)
+set yrange [21.5 : 26.5]; set ytics 0.5  # Image distance (mm)
+
+plot  1000 * eyeImageDist(x, focusWavelength(x), autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5) ) title "Relaxed accommodation" lc rgb "black" lw 1.5
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# BLUE, GREEN AND RED IMAGE DISTANCES (mm) VERSUS OBJECT DISTANCE (metres)
+# This graph plots the eye model image distances (as measured from the apex of the front surface of the cornea) of the blue, green and 
+# red cone peak sensitivity wavelengths as the object distance is varied. Here the eye model takes into account lag of accommodation, 
+# so as accommodation is increased, the eye model will bring into focus on the retina light of increasingly shorter (bluer) 
+# wavelengths.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==31) {
+set title  "Blue, Green and Red Images Distances vs Object Distance" 
+set xlabel "Object Distance (metres)" offset 0, 0.2
+set ylabel "Eye Image Distance (mm)"  offset 1, 0
+
+set xrange [0.2  :  4]; set xtics 0.5    # Object distance (metres)
+set yrange [23.5 : 25]; set ytics 0.5    # Image distance (mm)
+
+plot   \
+1000 * eyeImageDist(x, redConeW,   autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5)) title sprintf("Red Wavelength %i nm",   redConeW)   lc rgb "red"   lw 1.5, \
+1000 * eyeImageDist(x, greenConeW, autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5)) title sprintf("Green Wavelength %i nm", greenConeW) lc rgb "green" lw 1.5, \
+1000 * eyeImageDist(x, blueConeW,  autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5)) title sprintf("Blue Wavelength %i nm",  blueConeW)  lc rgb "blue"  lw 1.5
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# BLUR CIRCLE SIZE (mm) VERSUS OBJECT DISTANCE (metres)
+# This graph plots the diameter of the blur circles cast on the retina by light of the blue, green and red cone peak sensitivity 
+# wavelengths as the object distance is varied. As the object distance varies, the eye is autofocused, taking into account lag of
+# accommodation. The lag of accommodation characteristics depend on which Ivanoff subject is selected (by setting person = 1 to 10).
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==32) {
+blurPlaneOffset = 0
+
+set title sprintf("Blur Circle Diameter vs Object Distance\nFor person %i", person)  
+set xlabel "Object Distance (metres)"  offset 0, 0.2
+set ylabel "Blur Circle Diameter (mm)" offset 1, 0
+
+set xrange [0.2   :   5]; set xtics 0.5;  set mxtics 10     # Object distance (metres)
+set yrange [-0.04 : 0.1]; set ytics 0.01                    # Blur circle size (mm)
+
+
+plot \
+blur(x, redConeW, blurPlaneOffset,   emmetropicAxialLength(0)) * 1000 title "Red blur circle size R"   lc rgb "red"   lw 1.5, \
+blur(x, greenConeW, blurPlaneOffset, emmetropicAxialLength(0)) * 1000 title "Green blur circle size G " lc rgb "green" lw 1.5, \
+blur(x, blueConeW, blurPlaneOffset,  emmetropicAxialLength(0)) * 1000 title "Blue blur circle size B"  lc rgb "blue"  lw 1.5, \
+blur(x, blueConeW, blurPlaneOffset,  emmetropicAxialLength(0)) * 1000 - blur(x, redConeW, blurPlaneOffset, emmetropicAxialLength(0)) * 1000 title "Value of B−R" lc rgb lineColour(0) lw 1.5 dashtype 3, \
+0.1 * autoFocusLoA(x, emmetropicAxialLength(0), 0.5, 0.5) title "Focusing parameter (fp / 10)"  lc rgb "purple"  lw 1.5 dashtype 3
+
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# VISUAL FEEDBACK SIGNAL VERSUS DEGREE OF MYOPIA — EFFECT OF THE CORRECTIVE LENS MATERIAL ON THE VISUAL FEEDBACK SIGNAL
+# Like graph 3, this graph shows the visual feedback signal versus degree of myopia (in dioptres), but for different corrective lens 
+# materials. Depending on how the global variable 'peripheral' is set, we create a graph of either the posterior pole or the peripheral 
+# visual feedback signal. The graph indicates that lens materials with higher Abbe values tend to have a more positive visual feedback 
+# signal, at least in some contexts, but unfortunately not in the context of high lag individuals engaging in near work, so the effect
+# does not appear helpful for countering near work-induced myopia.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==33) {
+
+objectDistance = 0.3    # Object distance in metres
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set title sprintf("Visual Feedback Signal for Different Corrective Lens Materials vs Degree of Myopia\nFor person %i. Object distance is %s.", person, objectDistanceString) 
+set xlabel "Degree of Myopia (Dioptres)" offset 0, 0.2
+set ylabel "Visual Feedback Signal ".formulaString offset 1, 0
+
+set xrange [-8  : 0]; set xtics nomirror 2     # Degree of myopia in dioptres
+
+S = pupilDiameter / 0.002   # Used to increase the y-axis scale for larger pupil diameters when plotting formulas such as B-R
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-30*S:30*S]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2*S:5*S];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];     set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-5000*S:5000*S]; set ytics nomirror 1000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+
+set key bottom right 
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label 
+
+keyHeight = 15 # Controls text position within graph legend/key
+
+
+correctiveN1(w) = refractiveIndexCrownGlassFK51(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Crown Glass FK51    Abbe Ve: 84" lc rgb "#00CC00" lw 1.5
+
+correctiveN1(w) = refractiveIndexCR39(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "CR-39    Abbe Ve: 58" lc rgb "cyan" lw 1.5
+
+#correctiveN1(w) = waterN(w); keyHeight = keyHeight - 2; set key height keyHeight
+#plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Water    Abbe Ve: 56" lc rgb "#0088FF" lw 1.5
+
+correctiveN1(w) = refractiveIndexPMMA(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "PMMA    Abbe Ve: 53" lc rgb "magenta" lw 1.5
+
+correctiveN1(w) = refractiveIndexTrivex(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Trivex    Abbe Ve: 45" lc rgb "web-blue" lw 1.5
+
+correctiveN1(w) = refractiveIndexHighIndex167(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "High-Index Plastic 1.67    Abbe Ve: 32" lc rgb "gold" lw 1.5
+
+correctiveN1(w) = refractiveIndexPolycarbonate(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Polycarbonate    Abbe Ve: 28" lc rgb "red" lw 1.5
+
+correctiveN1(w) = refractiveIndexFlintGlassSF11(w); keyHeight = keyHeight - 2; set key height keyHeight
+plot VFSignal(objectDistance, x, 0, min(0, peripheral * offsetPerDioptre * x), ametropicAxialLength(x, 0)) title "Flint Glass SF11    Abbe Ve: 26" lc rgb "dark-violet" lw 1.5
+
+
+# A note on the offset plane used for calculating peripheral visual feedback signals:
+# The offset of the plane on which blur circles are calculated is set to offsetPerDioptre * x . This is because for every -1 dioptres 
+# of myopia, the focal point in the periphery moves about offsetPerDioptre = 0.036 mm = 0.000036 metres beyond the retina on average
+# (hyperopic defocus). See the section "A note on calculating the blur circle diameter on the peripheral retina". 
+# If the variable 'peripheral' is set to zero, then the blur plane offset becomes zero (disables the offset plane). The offset plane is 
+# disabled for hyperopia in this graph (via the min() function).
+
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# VISUAL FEEDBACK SIGNAL VERSUS EYE AXIAL LENGTH — EFFECT OF PUPIL SIZE ON THE VISUAL FEEDBACK SIGNAL
+# This graph plots the visual feedback signal versus the eye axial length (in mm) with different pupil diameters.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==34) {
+
+blurPlaneOffset = 0
+
+objectDistance = 0.6    # Object distance in metres
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set xlabel "Eye Axial Length (mm)"    offset 0, 0.2
+set ylabel "Visual Feedback Signal ".formulaString    offset 1, 0
+
+set xrange [21  : 28]; set xtics nomirror 1; set mxtics 10  # Axial length (in mm - must be converted to metres before use: x/1000)
+
+# Set yrange according to whether we are using B-R, B/R or (B-R)/(B+R) visual feedback signal
+if(formula<=4) { set yrange [-120:120]; set ytics nomirror 10; unset mytics; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}
+if(formula>=5) { set yrange [-2 : 6];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 1 to graph 1,first 1 nohead lc rgb "gray" dashtype 3}  
+if(formula==8) { set yrange [-1 : 1];   set ytics nomirror 1; set mytics 10; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+if(formula==9) { set yrange [-10000:10000]; set ytics nomirror 5000; set mytics 0; set arrow from graph 0, first 0 to graph 1,first 0 nohead lc rgb "gray" dashtype 3}  
+ 
+
+# Plot the graph for the Ivanoff individual specified by the 'person' variable
+if(person>=1) { 
+
+set title (powerCor1 == 0 && powerCor2 == 0) ? \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor person %i.  Object distance is %s.", person, objectDistanceString) : \
+sprintf("Visual Feedback Signal vs Axial Length in Autofocus Eye Model\nFor person %i. Corrective lens: %.2f D. Object distance is %s.", person, powerCor1 + powerCor2, objectDistanceString) 
+
+set key top left title "Pupil Diameter "
+ 
+set arrow from emmetropicAxialLength(0) * 1000,graph 0 to emmetropicAxialLength(0) * 1000,graph 1 nohead lc rgb "gray" dashtype 3
+
+set label at emmetropicAxialLength(0) * 1000, graph 0.05 "Person ".person." Has Emmetropic Axial Length = ".sprintf("%.2f mm", 1000 * emmetropicAxialLength(0)) font ',13' textcolor 'gray' point pointtype 1 pointsize 0 lc rgb 'black'
+
+set multiplot; plot 999999 notitle # Dummy plot first, then prevent redrawing of axes, etc
+unset title;unset xlabel;unset ylabel;unset tics;unset zeroaxis;unset border;unset label;set key title ""
+
+pupilDiameter = 0.002; set key height 3; plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "  2 mm" lc rgb lineColour(0) lw 1.5
+pupilDiameter = 0.004; set key height 5; plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "  4 mm" lc rgb lineColour(0) dashtype 2 lw 1.5
+pupilDiameter = 0.006; set key height 7; plot VFSignal(objectDistance, powerCor1, powerCor2, blurPlaneOffset, x/1000.0) title "  6 mm" lc rgb lineColour(0) dashtype 4 lw 1.5
+
+}
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# BLUR CIRCLE SIZE VERSUS CORRECTIVE LENS POWER
+# The graph plots the diameter of the blur circles (in mm) cast on the retina by light of the blue and red cone peak sensitivity 
+# wavelengths as the power of the corrective lens placed in front of the emmetropic schematic eye is varied. As the corrective lens 
+# power varies, the eye autofocuses, taking into account lag of accommodation. The lag of accommodation characteristics depend on which  
+# Ivanoff subject is selected (by setting person = 1 to 10).
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==35) {
+blurPlaneOffset = 0
+
+objectDistanceString = (objectDistance > 1e10) ? "infinity" : sprintf("%.2f metres", objectDistance)  # Infinite distances stated as "infinity"
+
+set title sprintf("Blur Circle Diameter vs Corrective Lens Power\nFor person %i.  Object distance is %s.", person, objectDistanceString)  
+set xlabel "Corrective Lens Power (Dioptres)"     offset 0, 0.2
+set ylabel "Blur Circle Diameter (mm)" offset 1, 0
+
+set xrange [-10   :   10]; set xtics nomirror 1; set mxtics 1    # Corrective lens power (dioptres)
+set yrange [-0.07 : 0.25]; set ytics nomirror 0.05               # Blur circle size (mm)
+
+set key top left        # Key position in graph
+set key offset -8, 0    # Moves key items 8 characters width to left
+ 
+plot \
+Red(objectDistance,  x, 0, blurPlaneOffset, emmetropicAxialLength(0)) * 1000 title "Red blur circle diameter R"   lc rgb "red"   lw 1.5, \
+Blue(objectDistance, x, 0, blurPlaneOffset, emmetropicAxialLength(0)) * 1000 title "Blue blur circle diameter B"  lc rgb "blue"  lw 1.5, \
+Blue(objectDistance, x, 0, blurPlaneOffset, emmetropicAxialLength(0)) * 1000 - Red(objectDistance,  x, 0, blurPlaneOffset, emmetropicAxialLength(0)) * 1000 title "Value of B−R" lc rgb lineColour(0) lw 1.5 dashtype 3
+
+} # End if
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# FOCAL LENGTH OF RED, GREEN AND BLUE LIGHT IN THE RELAXED EYE MODEL
+# In a relaxed model eye without lag of accommodation, we calculate the focal length for the peak sensitivity wavelengths of the long-
+# wavelength (red), medium-wavelength (green), and short-wavelength (blue) cones with the object at infinity. This outputs printed 
+# text, not a graph.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==36) {
+
+objectDistance = 1e90   # Object distance (metres)
+print sprintf("Red   focal length %3.2f mm", 1000 * eyeImageDist(objectDistance, redConeW,   0) )
+print sprintf("Green focal length %3.2f mm", 1000 * eyeImageDist(objectDistance, greenConeW, 0) )
+print sprintf("Blue  focal length %3.2f mm", 1000 * eyeImageDist(objectDistance, blueConeW,  0) )
+
+} # End if
+
+
+# RESULTS OF ABOVE PRINT:
+
+# Red   focal length 24.16 mm
+# Green focal length 24.10 mm
+# Blue  focal length 23.83 mm
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ABBE VALUE CALCULATIONS 
+# This calculates the Abbe values of various optical materials. This outputs printed text, not a graph.
+# To calculate the Abbe value of a material whose dispersion equation is known, set N(w) = to the material's dispersion function, 
+# then call the functions abbeValueUSA(0) or abbeValueEurope(0) to calculate the Abbe Vd value, or the Abbe Ve value, respectively.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==37) {
+
+abbeValueUSA(dummy)    = ( N(587.56) - 1.0 ) / ( N(486.13) - N(656.27) )     # Vd (Used more in the USA)
+#                        Helium d-line     Hydrogen F-line   Hydrogen C-line
+
+
+abbeValueEurope(dummy) = ( N(546.07) - 1.0 ) / ( N(479.99) - N(643.85) )     # Ve (Used more in Europe)
+#                        Mercury e-line    Cadmium F'-line   Cadmium C'-line
+
+# We use a dummy argument as it is not possible to define a function in gnuplot with no arguments
+
+N(w) = refractiveIndexCrownGlassFK51(w);    print sprintf("# Abbe Value Ve refractiveIndexCrownGlassFK51    %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexCrownGlassBK7(w);     print sprintf("# Abbe Value Ve refractiveIndexCrownGlassBK7     %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexCR39(w);              print sprintf("# Abbe Value Ve refractiveIndexCR39              %3.0f", abbeValueEurope(0))
+N(w) = waterN(w);                           print sprintf("# Abbe Value Ve water                            %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexPMMA(w);              print sprintf("# Abbe Value Ve refractiveIndexPMMA              %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexZeonexE48R(w);        print sprintf("# Abbe Value Ve refractiveIndexZeonexE48R        %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexTrivex(w);            print sprintf("# Abbe Value Ve refractiveIndexTrivex            %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexHighIndex167(w);      print sprintf("# Abbe Value Ve refractiveIndexHighIndex167      %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexFlintGlassSF10(w);    print sprintf("# Abbe Value Ve refractiveIndexFlintGlassSF10    %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexPolycarbonate(w);     print sprintf("# Abbe Value Ve refractiveIndexPolycarbonate     %3.0f", abbeValueEurope(0))
+N(w) = refractiveIndexFlintGlassSF11(w);    print sprintf("# Abbe Value Ve refractiveIndexFlintGlassSF11    %3.0f", abbeValueEurope(0))
+ 
+
+} # End if
+ 
+
+# RESULTS OF ABOVE PRINT:
+
+# Abbe Value Ve refractiveIndexCrownGlassFK51     84
+# Abbe Value Ve refractiveIndexCrownGlassBK7      64
+# Abbe Value Ve refractiveIndexCR39               58
+# Abbe Value Ve water                             56
+# Abbe Value Ve refractiveIndexPMMA               53
+# Abbe Value Ve refractiveIndexZeonexE48R         51
+# Abbe Value Ve refractiveIndexTrivex             45
+# Abbe Value Ve refractiveIndexHighIndex167       32
+# Abbe Value Ve refractiveIndexFlintGlassSF10     28
+# Abbe Value Ve refractiveIndexPolycarbonate      28
+# Abbe Value Ve refractiveIndexFlintGlassSF11     25
+
+
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# BLUR CIRCLE SIZE (mm) AT DIFFERENT PUPIL SIZES (mm)
+# Prints the blue blur circle size for different pupil diameters when the eye is gazing at infinity. Also prints the red blur circle 
+# size for different pupil diameters when the eye is focusing at a 30 cm distance. This outputs printed text, not a graph.
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+if(GTP==38) {
+
+blurPlaneOffset = 0
+
+objectDistance = 1e90
+
+do for [pupilDiameterInMillimetres = 2:8] {   
+pupilDiameter = pupilDiameterInMillimetres / 1000.0
+print sprintf("# Blue blur circle size for %d mm pupil = %05.1f μm", pupilDiameterInMillimetres, 1000000 * blur(objectDistance, blueConeW, blurPlaneOffset, emmetropicAxialLength(0) ) ) 
+} 
+
+print ""
+
+objectDistance = 0.3
+
+do for [pupilDiameterInMillimetres = 2:8] {   
+pupilDiameter = pupilDiameterInMillimetres / 1000.0
+print sprintf("# Red blur circle size for %d mm pupil  = %05.1f μm", pupilDiameterInMillimetres, 1000000 * blur(objectDistance, redConeW, blurPlaneOffset, emmetropicAxialLength(0) ) ) 
+} 
+
+
+} # End if
+
+
+# RESULTS OF ABOVE PRINT (for person 1):
+
+# Blue blur circle size for 2 mm pupil = 054.5 μm
+# Blue blur circle size for 3 mm pupil = 081.8 μm
+# Blue blur circle size for 4 mm pupil = 109.0 μm
+# Blue blur circle size for 5 mm pupil = 136.3 μm
+# Blue blur circle size for 6 mm pupil = 163.6 μm
+# Blue blur circle size for 7 mm pupil = 190.8 μm
+# Blue blur circle size for 8 mm pupil = 218.1 μm
+
+# Red blur circle size for 2 mm pupil  = 013.9 μm
+# Red blur circle size for 3 mm pupil  = 020.8 μm
+# Red blur circle size for 4 mm pupil  = 027.7 μm
+# Red blur circle size for 5 mm pupil  = 034.7 μm
+# Red blur circle size for 6 mm pupil  = 041.6 μm
+# Red blur circle size for 7 mm pupil  = 048.5 μm
+# Red blur circle size for 8 mm pupil  = 055.5 μm
+
+
+
+
+unset multiplot  # When run in Terminal, gnuplot remains in multiplot mode unless it is unset here
+
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+# END 
+# »»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»»
+
+
+
+
+ 
+ 
