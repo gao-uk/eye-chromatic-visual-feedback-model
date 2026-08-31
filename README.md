@@ -1,4 +1,4 @@
-**Hypothesised Ocular Visual Feedback Mechanism Modelling Emmetropisation Driven by Longitudinal Chromatic Aberration, For the Purpose of Exploring How Sustained Near Work May Induce Myopia**
+**Hypothesised Ocular Visual Feedback Emmetropisation Mechanism Utilising Longitudinal Chromatic Aberration, Exploring How Sustained Near Work May Induce Myopia**
 
 This repository contains a script file which runs in the free gnuplot graphing application, and plots a series of graphs. 
 
