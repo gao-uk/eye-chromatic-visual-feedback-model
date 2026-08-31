@@ -2,7 +2,7 @@
 
 This repository contains a script file which runs in the free gnuplot graphing application, and plots a series of graphs. 
 
-This gnuplot script encodes a software eye model that comprises the Full Theoretical Eye of Yves Le Grand, linked to a hypothesised visual feedback mechanism (VFM) that uses information derived from ocular longitudinal chromatic aberration to simulate emmetropisation (regulating eye axial length to match the optical power of the eye). 
+This gnuplot script encodes a software model that comprises a schematic eye (the Full Theoretical Eye of Yves Le Grand) integrated with a visual feedback mechanism (VFM) that employs information derived from ocular longitudinal chromatic aberration in the schematic eye to simulate a hypothesised emmetropisation scheme. 
 
 The VFM operates by measuring the levels of blue and red image blur on the Le Grand schematic eye retina, and from these calculating a visual feedback signal that can regulate schematic eye axial length.
 
